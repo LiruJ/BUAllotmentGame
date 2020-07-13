@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7460c751d89e03a459a02a630ba1e221, type: 3}
+  m_Name: Basic
+  m_EditorClassIdentifier: Assembly-CSharp:Assets.Scripts.BUCore.TileMap:Tileset
+  tiles:
+  - name: Air
+    tileObject: {fileID: 0}
+    floorTileLogic: {fileID: 0}
+  - name: Dirt
+    tileObject: {fileID: 1072970950814904845, guid: edbfe68b24590524bb089773712d54cd,
+      type: 3}
+    floorTileLogic: {fileID: 0}
+  - name: Grass
+    tileObject: {fileID: 2966889724577161017, guid: 6223b0a85352eaa4fb7d449a37e0f9ab,
+      type: 3}
+    floorTileLogic: {fileID: 11400000, guid: f5f995e00c9fe564a8ca4ca4459bbff7, type: 2}
