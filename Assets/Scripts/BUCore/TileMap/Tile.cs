@@ -28,6 +28,9 @@ namespace Assets.Scripts.BUCore.TileMap
 
         /// <summary> The <see cref="GameObject"/> that gets placed when this tile is placed down. </summary>
         public GameObject TileObject => tileObject;
+
+        /// <summary> Is true if this tile has an associated <see cref="GameObject"/>; otherwise, false. </summary>
+        public bool HasTileObject => TileObject != null;
         #endregion
 
         #region Initialisation Functions

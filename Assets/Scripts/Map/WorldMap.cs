@@ -1,8 +1,6 @@
 ﻿using Assets.Scripts.BUCore.TileMap;
 using Assets.Scripts.Objects;
 using Assets.Scripts.Tiles;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Map
@@ -16,38 +14,6 @@ namespace Assets.Scripts.Map
 
         [SerializeField]
         private ObjectTilemap objectTilemap = null;
-        #endregion
-
-        #region Fields
-
-        #endregion
-
-        #region Properties
-
-        #endregion
-
-        #region Initialisation Functions
-        private void Start()
-        {
-
-        }
-
-        private void Awake()
-        {
-
-        }
-        #endregion
-
-        #region Update Functions
-        private void Update()
-        {
-
-        }
-
-        private void FixedUpdate()
-        {
-
-        }
         #endregion
 
         #region Validation Functions

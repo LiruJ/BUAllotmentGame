@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Grass
   m_EditorClassIdentifier: 
   spreadableTile: Dirt
-  grassTileName: Grass
-  spreadChance: 0.1
+  spreadChance: 0.001
+  spreadDiagonally: 1

@@ -14,6 +14,7 @@ namespace Assets.Scripts.Tiles
         #endregion
 
         #region Initialisation Functions
+        /// <summary> Is fired when the tileset loads. </summary>
         public override void OnLoaded() => TileLogic = floorTileLogic;
         #endregion
     }

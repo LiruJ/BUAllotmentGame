@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Tiles;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.BUCore.TileMap
 {
@@ -24,7 +23,7 @@ namespace Assets.Scripts.BUCore.TileMap
 
         #region Fields
         /// <summary> The array of tile data. </summary>
-        private FloorTileData[,] tileData = null;
+        private T[,] tileData = null;
 
         /// <summary> The physical <see cref="GameObject"/>s for each tile in the Unity scene. </summary>
         protected GameObject[,] tileObjects = null;
@@ -34,9 +33,9 @@ namespace Assets.Scripts.BUCore.TileMap
         #endregion
 
         #region Indexers
-        public FloorTileData this[int x, int y]
+        public T this[int x, int y]
         {
-            get => IsInRange(x, y) ? tileData[x, y] : new FloorTileData();
+            get => IsInRange(x, y) ? tileData[x, y] : default;
             set { if (IsInRange(x, y)) tileData[x, y] = value; }
         }
         #endregion
@@ -68,7 +67,8 @@ namespace Assets.Scripts.BUCore.TileMap
             // Register this map with the world map.
             worldMap.RegisterTilemap(this);
 
-            tileData = new FloorTileData[Width, Height];
+            // Create the arrays.
+            tileData = new T[Width, Height];
             tileObjects = new GameObject[Width, Height];
         }
         #endregion
@@ -98,13 +98,14 @@ namespace Assets.Scripts.BUCore.TileMap
         /// <param name="x"> The x co-ordinate of the position. </param>
         /// <param name="y"> The y co-ordinate of the position. </param>
         /// <param name="tile"> The tile. </param>
+        /// <remarks> If this function is overridden, be sure to call the OnTileDestroyed and OnTilePlaced functions. </remarks>
         public virtual void SetTile(int x, int y, Tile<T> tile)
         {
             // If the tile has logic associated with it, query it first to ensure that the tile can be placed.
             if (tile.HasTileLogic && !tile.TileLogic.CanPlaceTile(this, tile, x, y)) return;
 
             // Set the index of the tile data at the given position to that of the given tile.
-            tileData[x, y].Index = Tileset.GetTileIndexFromName(tile.Name);
+            setTileIndex(x, y, tile);
 
             // If the tile has logic, fire the tile destroyed function.
             if (tile.HasTileLogic) tile.TileLogic.OnTileDestroyed(this, x, y);
@@ -112,21 +113,36 @@ namespace Assets.Scripts.BUCore.TileMap
             // If a GameObject already exists at the tile position, destroy it.
             if (tileObjects[x, y] != null) Destroy(tileObjects[x, y]);
 
-            // If the tile has a GameObject associated with it, instantiate it.
-            if (tile.TileObject != null)
-            {
-                // Instantiate the tile's GameObject, positioning it within the grid and setting its parent to this map's GameObject.
-                GameObject tileObject = Instantiate(tile.TileObject, Grid.CellToLocal(new Vector3Int(x, 0, y)) + (tile.TileObject.transform.localScale / 2.0f), Quaternion.identity, transform);
-
-                // Name the object based on its co-ords for easy debugging.
-                tileObject.name = $"{x}, {y}";
-                
-                // Set the object within the array.
-                tileObjects[x, y] = tileObject;
-            }
+            // Place the tile object if one exists.
+            if (tile.HasTileObject) placeTileObject(x, y, tile);
 
             // If the tile has logic, fire the tile placed function.
             if (tile.HasTileLogic) tile.TileLogic.OnTilePlaced(this, x, y);
+        }
+
+        /// <summary> Is called by <see cref="SetTile(int, int, Tile{T})"/> in order to set the index of the tile at the given <paramref name="x"/> and <paramref name="y"/> position. </summary>
+        /// <param name="x"> The x co-ordinate of the position. </param>
+        /// <param name="y"> The y co-ordinate of the position. </param>
+        /// <param name="tile"> The tile that the position is being set to. </param>
+        protected virtual void setTileIndex(int x, int y, Tile<T> tile) => tileData[x, y].Index = Tileset.GetTileIndexFromName(tile.Name);
+
+        /// <summary> Is called by <see cref="SetTile(int, int, Tile{T})"/> in order to create the tile object at the given <paramref name="x"/> and <paramref name="y"/> position, only being called if the tile has an associated object. </summary>
+        /// <param name="x"> The x co-ordinate of the position. </param>
+        /// <param name="y"> The y co-ordinate of the position. </param>
+        /// <param name="tile"> The tile whose object is being placed. </param>
+        protected virtual void placeTileObject(int x, int y, Tile<T> tile)
+        {
+            // Do nothing if no tile object exists.
+            if (!tile.HasTileObject) return;
+
+            // Instantiate the tile's GameObject, positioning it within the grid and setting its parent to this map's GameObject.
+            GameObject tileObject = Instantiate(tile.TileObject, Grid.CellToLocal(new Vector3Int(x, 0, y)) + tile.TileObject.transform.localPosition, Quaternion.identity, transform);
+
+            // Name the object based on its co-ords for easy debugging.
+            tileObject.name = $"{x}, {y}";
+
+            // Set the object within the array.
+            tileObjects[x, y] = tileObject;
         }
 
         public bool IsTile(int x, int y, string tileName) => IsTile(x, y, Tileset.GetTileIndexFromName(tileName));
@@ -134,34 +150,47 @@ namespace Assets.Scripts.BUCore.TileMap
         public bool IsTile(int x, int y, Tile<T> tile) => IsTile(x, y, Tileset.GetTileIndexFromName(tile.Name));
 
         public bool IsTile(int x, int y, ushort index) => IsInRange(x, y) ? tileData[x, y].Index == index : false;
+
+        public bool IsTileEmpty(int x, int y) => IsTile(x, y, Tileset.EmptyTileName);
         #endregion
 
         #region Update Functions
         protected void tryTick()
         {
+            // If there should be no ticks, return immediately.
             if (ticksPerSecond == 0) return;
 
+            // Calculate how many seconds it has been since the last tick.
             float timeSinceLastTick = Time.time - timeOfLastTick;
 
+            // Keep ticking as many times as needed.
             int ticksThisFrame = 0;
             while (timeSinceLastTick >= 1.0f / ticksPerSecond)
             {
+                // Do the tick.
                 doTick();
+
+                // Track the number of ticks made this frame.
                 ticksThisFrame++;
+
+                // Remove the tick time from the time since last tick.
                 timeSinceLastTick -= 1.0f / ticksPerSecond;
             }
 
+            // If ticks were made, track the time of the last tick.
             if (ticksThisFrame > 0) timeOfLastTick = Time.time;
-            if (ticksThisFrame > 1) Debug.LogWarning($"{ticksThisFrame} ticks in one frame.");
         }
 
         private void doTick()
         {
+            // Go over each tile in the map.
             for (int x = 0; x < Width; x++)
                 for (int y = 0; y < Height; y++)
                 {
+                    // Get the tile from the tileset.
                     Tile<T> tile = Tileset.GetTileFromIndex(tileData[x, y].Index);
-
+                    
+                    // If the tile has logic, tick it.
                     if (tile.HasTileLogic) tile.TileLogic.OnTick(this, x, y);
                 }
         }

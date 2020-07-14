@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca01bb76bd406de43b56fb39d5062197, type: 3}
   m_Name: ObjectSet
   m_EditorClassIdentifier: 
+  emptyTileName: Empty
   tiles:
-  - name: Air
-    tileObject: {fileID: 0}
-    objectTileLogic: {fileID: 0}
   - name: Shed
-    tileObject: {fileID: 1072970950814904845, guid: e9c1770386dac304f966cf6ed0e234d7,
+    tileObject: {fileID: -927199367670048503, guid: 89d788ac21e2e2f4db0d4267d0c03d16,
       type: 3}
     objectTileLogic: {fileID: 11400000, guid: b5e7c5f41153f2b4793daa9b2042ef60, type: 2}
+    requiredFloor: Dirt
+    width: 2
+    height: 2
