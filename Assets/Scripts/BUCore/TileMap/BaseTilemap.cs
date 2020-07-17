@@ -136,7 +136,9 @@ namespace Assets.Scripts.BUCore.TileMap
             if (!tile.HasTileObject) return;
 
             // Instantiate the tile's GameObject, positioning it within the grid and setting its parent to this map's GameObject.
-            GameObject tileObject = Instantiate(tile.TileObject, Grid.CellToLocal(new Vector3Int(x, 0, y)) + tile.TileObject.transform.localPosition, Quaternion.identity, transform);
+            GameObject tileObject = Instantiate(tile.TileObject, transform);
+            tileObject.transform.localPosition = Grid.CellToLocal(new Vector3Int(x, 0, y)) + tile.TileObject.transform.localPosition;
+            tileObject.transform.localRotation = Quaternion.identity;
 
             // Name the object based on its co-ords for easy debugging.
             tileObject.name = $"{x}, {y}";

@@ -1,5 +1,5 @@
-﻿using Assets.Scripts.Objects;
-using Assets.Scripts.Tiles;
+﻿using Assets.Scripts.BUCore.TileMap;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,10 +9,6 @@ namespace Assets.Scripts.Player
     {
         #region Inspector Fields
         [Header("Dependencies")]
-        [Tooltip("The tile placer component used by the player to place tiles.")]
-        [SerializeField]
-        private TilePlacer tilePlacer = null;
-
         [Tooltip("The object that holds the main object ghost.")]
         [SerializeField]
         private Transform objectGhostContainer = null;
@@ -21,13 +17,9 @@ namespace Assets.Scripts.Player
         [SerializeField]
         private Transform gridGhostContainer = null;
 
-        [Tooltip("The floor tile map.")]
+        [Tooltip("The world map, used to orientate the indicator.")]
         [SerializeField]
-        private FloorTilemap floorMap = null;
-
-        [Tooltip("The object tile map.")]
-        [SerializeField]
-        private ObjectTilemap objectMap = null;
+        private BaseWorldMap worldMap = null;
 
         [Header("Prefabs")]
         [Tooltip("The prefab for the grid tile indicator.")]
@@ -46,50 +38,56 @@ namespace Assets.Scripts.Player
 
         #region Fields
         /// <summary> A 2D list of the grid indicator objects. </summary>
-        private readonly List<List<IndicatorGhost>> gridIndicators = new List<List<IndicatorGhost>>(); 
+        private readonly List<List<IndicatorGhost>> gridIndicators = new List<List<IndicatorGhost>>();
 
         /// <summary> The current ghost object. </summary>
         private IndicatorGhost currentGhost = null;
+        private bool showGridGhost = false;
+        private bool showObjectGhost = false;
+        #endregion
+
+        #region Properties
+        public bool ShowGridGhost { get => showGridGhost; set { showGridGhost = value; gridGhostContainer.gameObject.SetActive(value); } }
+
+        public bool ShowObjectGhost { get => showObjectGhost; set { showObjectGhost = value; if (currentGhost != null) currentGhost.gameObject.SetActive(value); } }
         #endregion
 
         #region Indicator Functions
-        public void HandleTileChange()
+        public void ChangeGridGhosts(int width, int height)
         {
-            // Change the main object ghost to the new selected object.
-            changeObjectGhost();
+            // If either of the dimensions is 0, disable the grid.
+            if (width == 0 || height == 0) { ShowGridGhost = false; return; }
 
-            // Change the grid ghosts to match the dimensions of the new object.
-            changeGridGhosts();
-        }
-
-        private void changeGridGhosts()
-        {
             // Resize the grid indicator main list if it is needed.
-            if (gridIndicators.Count < tilePlacer.CurrentObjectTile.Height)
+            if (gridIndicators.Count < height)
             {
                 // Set the capacity first to save on memory allocations.
-                gridIndicators.Capacity = tilePlacer.CurrentObjectTile.Height;
+                gridIndicators.Capacity = height;
 
                 // Add the empty lists.
-                for (int y = gridIndicators.Count; y < tilePlacer.CurrentObjectTile.Height; y++)
-                    gridIndicators.Add(new List<IndicatorGhost>(tilePlacer.CurrentObjectTile.Width));
+                for (int y = gridIndicators.Count; y < height; y++)
+                    gridIndicators.Add(new List<IndicatorGhost>(width));
             }
 
             // Go over each row of the grid indicators.
-            for (int y = 0; y < tilePlacer.CurrentObjectTile.Height; y++)
+            for (int y = 0; y < height; y++)
             {
                 // If the row needs to be resized, do so.
                 List<IndicatorGhost> row = gridIndicators[y];
-                if (row.Count < tilePlacer.CurrentObjectTile.Width) row.Capacity = tilePlacer.CurrentObjectTile.Width;
+                if (row.Count < width) row.Capacity = width;
 
                 // Go over the new grid cells and instantiate the grid indicators.
-                for (int x = row.Count; x < tilePlacer.CurrentObjectTile.Width; x++)
+                for (int x = row.Count; x < width; x++)
                 {
                     // Ensure nothing exists at this location.
                     Debug.Assert(x >= row.Count || row[x] == null);
 
-                    // Create the cell indicator.
-                    GameObject cellIndicator = Instantiate(tileValidityIndicator, tilePlacer.WorldMap.Grid.CellToLocal(new Vector3Int(x, 0, y)), tilePlacer.WorldMap.transform.rotation, gridGhostContainer);
+                    // Create the cell indicator. 
+                    // You may think that it's strange that I didn't use the Instantiate function with the position and rotation parameters.
+                    // I spent an entire hour trying to work out if it is local or world space, the only answer I could come to was "yes". Just set the transform data after, instead of relying on a black-box function.
+                    GameObject cellIndicator = Instantiate(tileValidityIndicator, gridGhostContainer);
+                    cellIndicator.transform.localPosition = Vector3.Scale(new Vector3(x, 0, y), worldMap.Grid.cellSize);
+                    cellIndicator.transform.localRotation = Quaternion.identity;
 
                     // Get and save the indicator ghost component from the indicator, if none exists, throw an error.
                     if (!cellIndicator.TryGetComponent(out IndicatorGhost cellGhost)) { Debug.LogError("Cell indicator prefab is missing IndicatorGhost component.", this); return; }
@@ -98,45 +96,47 @@ namespace Assets.Scripts.Player
             }
         }
 
-        private void changeObjectGhost()
+        public void ChangeObjectGhost(GameObject newObject)
         {
             // Delete the last ghost object if one existed.
             if (objectGhostContainer.childCount > 0) Destroy(objectGhostContainer.GetChild(0).gameObject);
 
-            // Only create a new ghost if the new tile has an associated object.
-            if (tilePlacer.CurrentObjectTile.HasTileObject)
-            {
-                // Create a new ghost object.
-                GameObject ghostObject = Instantiate(tilePlacer.CurrentObjectTile.TileObject, objectGhostContainer);
+            // Disable the object ghost if the given item is null.
+            if (newObject == null) { ShowObjectGhost = false; return; }
 
-                // Create the ghost behaviour for the ghost object and save the reference.
-                currentGhost = ghostObject.AddComponent<IndicatorGhost>();
-                currentGhost.ValidMaterial = validMaterial;
-                currentGhost.InvalidMaterial = invalidMaterial;
-            }
+            // Create a new ghost object.
+            GameObject ghostObject = Instantiate(newObject, objectGhostContainer);
+
+            // Create the ghost behaviour for the ghost object and save the reference.
+            currentGhost = ghostObject.AddComponent<IndicatorGhost>();
+            currentGhost.ValidMaterial = validMaterial;
+            currentGhost.InvalidMaterial = invalidMaterial;
         }
         #endregion
 
         #region Update Functions
-        public void UpdateIndication(Vector3Int tilePosition)
+        public void UpdateGridGhost(Vector3Int tilePosition, int width, int height, Func<int, int, bool> validityFunction)
+        {
+            if (!ShowGridGhost) return;
+
+            // Go over each grid tile indicator.
+            for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
+                    gridIndicators[y][x].Change(validityFunction(tilePosition.x + x, tilePosition.z + y));
+        }
+
+        public void UpdateObjectGhost(bool canPlace)
+        {
+            if (!ShowObjectGhost) return;
+
+            // Change the ghost material of the main object based on if it can be placed.
+            currentGhost.Change(canPlace);
+        }
+
+        public void UpdatePosition(Vector3Int tilePosition)
         {
             // Set the position of the indicator.
-            transform.SetPositionAndRotation(tilePlacer.WorldMap.Grid.CellToWorld(tilePosition), tilePlacer.WorldMap.transform.rotation);
-
-            // If there's a ghost for the object, change the materials of the indicators.
-            if (currentGhost != null)
-            {
-                // Whether or not to check the floor for the current object.
-                bool checkFloor = !string.IsNullOrWhiteSpace(tilePlacer.CurrentObjectTile.RequiredFloor);
-
-                // Go over each grid tile indicator.
-                for (int x = 0; x < tilePlacer.CurrentObjectTile.Width; x++)
-                    for (int y = 0; y < tilePlacer.CurrentObjectTile.Height; y++)
-                        gridIndicators[y][x].Change(tilePlacer.CurrentObjectTile.TileIsValid(objectMap, floorMap, tilePosition.x + x, tilePosition.z + y, checkFloor, tilePlacer.CurrentObjectTile.RequiredFloor));
-
-                // Change the ghost material of the main object based on if it can be placed.
-                currentGhost.Change(!tilePlacer.CurrentObjectTile.HasTileLogic || tilePlacer.CurrentObjectTile.TileLogic.CanPlaceTile(tilePlacer.WorldMap.GetTilemap<ObjectTileData>(), tilePlacer.CurrentObjectTile, tilePosition.x, tilePosition.z));
-            }
+            transform.SetPositionAndRotation(worldMap.Grid.CellToWorld(tilePosition), worldMap.transform.rotation);
         }
         #endregion
     }
