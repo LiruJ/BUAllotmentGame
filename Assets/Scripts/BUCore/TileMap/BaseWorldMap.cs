@@ -41,9 +41,20 @@ namespace Assets.Scripts.BUCore.TileMap
 
         #region Tilemap Functions
         public BaseTilemap<T> GetTilemap<T>() where T : ITileData
-            => mapsByType.TryGetValue(typeof(T), out object tilemap) ? tilemap as BaseTilemap<T> : null;
+            => mapsByType.TryGetValue(typeof(T), out object tilemap) ? tilemap as BaseTilemap<T> : findAndRegisterTilemap<T>();
 
-        public void RegisterTilemap<T>(BaseTilemap<T> tilemap) where T : ITileData => mapsByType.Add(typeof(T), tilemap);
+        private BaseTilemap<T> findAndRegisterTilemap<T>() where T : ITileData
+        {
+            BaseTilemap<T> tilemap = GetComponentInChildren<BaseTilemap<T>>();
+            if (tilemap != null) RegisterTilemap(tilemap);
+            return tilemap;
+        }
+
+        public void RegisterTilemap<T>(BaseTilemap<T> tilemap) where T : ITileData
+        {
+            if (tilemap == null) return;
+            mapsByType.Add(typeof(T), tilemap);
+        }
         #endregion
     }
 }

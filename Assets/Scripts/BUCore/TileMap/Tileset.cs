@@ -49,9 +49,9 @@ namespace Assets.Scripts.BUCore.TileMap
 
         public string GetTileNameFromIndex(ushort index) => index == 0 ? emptyTileName : tilesByIndex[index].Name;
 
-        public Tile<T> GetTileFromName(string name) => tilesByName[name];
+        public Tile<T> GetTileFromName(string name) => tilesByName.TryGetValue(name, out Tile<T> tile) ? tile : null;
 
-        public Tile<T> GetTileFromIndex(ushort index) => tilesByIndex[index];
+        public Tile<T> GetTileFromIndex(ushort index) => tilesByIndex.TryGetValue(index, out Tile<T> tile) ? tile : null;
         #endregion
     }
 }

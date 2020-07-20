@@ -1,10 +1,6 @@
 ﻿using Assets.Scripts.UI.Tools;
-using System.CodeDom;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UI;
-using UnityEngine;
 
 namespace Assets.Scripts.Editor
 {
@@ -15,6 +11,7 @@ namespace Assets.Scripts.Editor
         #region Fields
         private SerializedProperty toolType = null;
         private SerializedProperty onSelectedEvent = null;
+        private SerializedProperty onDeselectedEvent = null;
         #endregion
 
         #region Initialisation Functions
@@ -24,6 +21,7 @@ namespace Assets.Scripts.Editor
             
             toolType = serializedObject.FindProperty("toolType");
             onSelectedEvent = serializedObject.FindProperty("onSelected");
+            onDeselectedEvent = serializedObject.FindProperty("onDeselected");
 
         }
         #endregion
@@ -38,6 +36,7 @@ namespace Assets.Scripts.Editor
             base.OnInspectorGUI();
             EditorGUILayout.PropertyField(toolType);
             EditorGUILayout.PropertyField(onSelectedEvent);
+            EditorGUILayout.PropertyField(onDeselectedEvent);
 
             serializedObject.ApplyModifiedProperties();
         }

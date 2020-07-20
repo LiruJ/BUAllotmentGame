@@ -21,13 +21,18 @@ namespace Assets.Scripts.UI.Tools
         private ToolEvent onSelected = new ToolEvent();
 
         public ToolEvent OnSelected => onSelected;
+
+        [SerializeField]
+        private ToolEvent onDeselected = new ToolEvent();
+
+        public ToolEvent OnDeselected => onDeselected;
         #endregion
 
         #region Initialisation Functions
         protected override void Start()
         {
             base.Start();
-            onValueChanged.AddListener((selected) => { if (selected) onSelected.Invoke(toolType); });
+            onValueChanged.AddListener((selected) => { if (selected) onSelected.Invoke(toolType); else onDeselected.Invoke(toolType); });
         }
         #endregion
     }

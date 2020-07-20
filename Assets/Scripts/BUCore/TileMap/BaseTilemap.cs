@@ -35,8 +35,8 @@ namespace Assets.Scripts.BUCore.TileMap
         #region Indexers
         public T this[int x, int y]
         {
-            get => IsInRange(x, y) ? tileData[x, y] : default;
-            set { if (IsInRange(x, y)) tileData[x, y] = value; }
+            get => (tileData != null && IsInRange(x, y)) ? tileData[x, y] : default;
+            set { if (tileData != null && IsInRange(x, y)) tileData[x, y] = value; }
         }
         #endregion
 
@@ -64,9 +64,6 @@ namespace Assets.Scripts.BUCore.TileMap
             // Throw an error if the world map object is missing.
             if (worldMap == null) { Debug.LogError("World map object is missing, tilemap cannot initialise.", this); return; }
 
-            // Register this map with the world map.
-            worldMap.RegisterTilemap(this);
-
             // Create the arrays.
             tileData = new T[Width, Height];
             tileObjects = new GameObject[Width, Height];
@@ -79,6 +76,8 @@ namespace Assets.Scripts.BUCore.TileMap
         /// <param name="y"> The y co-ordinate of the position. </param>
         /// <returns> True if the position is in range; otherwise, false. </returns>
         public bool IsInRange(int x, int y) => x >= 0 && x < Width && y >= 0 && y < Height;
+
+        public bool IsInRange(Vector3Int tilePosition) => IsInRange(tilePosition.x, tilePosition.z);
         #endregion
 
         #region Tile Functions

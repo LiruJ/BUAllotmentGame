@@ -31,7 +31,13 @@ namespace Assets.Scripts.Player.Tools
 
         public virtual void OnSelected() { }
 
-        public virtual void OnDeselected() { }
+        public virtual void OnDeselected() 
+        {
+            TileIndicator.ShowGridGhost = false;
+            TileIndicator.ShowObjectGhost = false;
+
+            TileIndicator.ChangeObjectGhost(null);
+        }
         #endregion
 
         #region Update Functions

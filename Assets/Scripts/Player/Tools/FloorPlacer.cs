@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Player.Tools
 {
-    public class ObjectPlacer : Tool
+    public class FloorPlacer : Tool
     {
         #region Inspector Fields
         [SerializeField]
@@ -15,23 +15,21 @@ namespace Assets.Scripts.Player.Tools
         #endregion
 
         #region Fields
-        private ObjectTile currentTile;
+        private FloorTile currentTile;
         #endregion
 
         #region Properties
-        /// <summary> The currently selected object tile. </summary>
-        public ObjectTile CurrentTile
+        /// <summary> The currently selected floor tile. </summary>
+        public FloorTile CurrentTile
         {
             get => currentTile;
             set
             {
-                currentTile = value; 
+                currentTile = value;
 
-                TileIndicator.ShowGridGhost = value != null;
                 TileIndicator.ShowObjectGhost = value != null;
 
                 if (TileIndicator.ShowObjectGhost) TileIndicator.ChangeObjectGhost(value.TileObject);
-                if (TileIndicator.ShowGridGhost) TileIndicator.ChangeGridGhosts(value.Width, value.Height);
             }
         }
         #endregion
@@ -39,15 +37,10 @@ namespace Assets.Scripts.Player.Tools
         #region Tool Functions
         public override void OnSelected()
         {
-            TileIndicator.ShowGridGhost = true;
+            TileIndicator.ShowGridGhost = false;
             TileIndicator.ShowObjectGhost = true;
 
-            if (currentTile != null)
-            {
-                if (currentTile.HasTileObject) TileIndicator.ChangeObjectGhost(currentTile.TileObject);
-                TileIndicator.ChangeGridGhosts(currentTile.Width, currentTile.Height);
-            }
-
+            if (currentTile != null && currentTile.HasTileObject) TileIndicator.ChangeObjectGhost(currentTile.TileObject);
         }
         #endregion
 
@@ -62,15 +55,12 @@ namespace Assets.Scripts.Player.Tools
             // Update the placement ghost.
             if (CurrentTile != null)
             {
-                TileIndicator.UpdateGridGhost(currentTilePosition, CurrentTile.Width, CurrentTile.Height,
-                    (x, y) => CurrentTile.TileIsValid(objectTilemap, floorTilemap, x, y, !string.IsNullOrWhiteSpace(CurrentTile.RequiredFloor), CurrentTile.RequiredFloor));
-
-                TileIndicator.UpdateObjectGhost(!CurrentTile.HasTileLogic || CurrentTile.TileLogic.CanPlaceTile(objectTilemap, CurrentTile, currentTilePosition.x, currentTilePosition.z));
+                TileIndicator.UpdateObjectGhost(!CurrentTile.HasTileLogic || CurrentTile.TileLogic.CanPlaceTile(floorTilemap, CurrentTile, currentTilePosition.x, currentTilePosition.z));
 
                 // If the player clicks, place the currently selected tile.
                 if (Input.GetMouseButtonDown(0))
                 {
-                    if (objectTilemap.IsInRange(currentTilePosition)) objectTilemap.SetTile(currentTilePosition.x, currentTilePosition.z, CurrentTile);
+                    if (floorTilemap.IsInRange(currentTilePosition)) floorTilemap.SetTile(currentTilePosition.x, currentTilePosition.z, CurrentTile);
                 }
             }
         }

@@ -42,7 +42,11 @@ namespace Assets.Scripts.Objects
 
         #region Tile Functions
         public bool TileIsValid(BaseTilemap<ObjectTileData> objectMap, BaseTilemap<FloorTileData> floorMap, int x, int y, bool checkFloor, string requiredFloor)
-            => objectMap.IsTileEmpty(x, y) && (!checkFloor || floorMap.IsTile(x, y, requiredFloor));
+            => objectMap.IsTileEmpty(x, y) && (!checkFloor || FloorIsValid(floorMap, x, y));
+
+        public bool FloorIsValid(BaseTilemap<FloorTileData> floorMap, int x, int y) => FloorIsValid(floorMap.Tileset.GetTileFromIndex(floorMap[x, y].Index));
+
+        public bool FloorIsValid(Tile<FloorTileData> floorTile) => string.IsNullOrWhiteSpace(requiredFloor) || floorTile.Name == requiredFloor;
         #endregion
     }
 }

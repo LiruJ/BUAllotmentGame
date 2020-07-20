@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.BUCore.TileMap;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Assets.Scripts.GameInterface.Tiles
 {
@@ -23,8 +22,6 @@ namespace Assets.Scripts.GameInterface.Tiles
                 TileIcon tileIcon = newTileIcon.GetComponent<TileIcon>();
                 tileIcon.TileName = tile.Name;
             }
-
-            GetComponent<HorizontalLayoutGroup>().enabled = true;
         }
         #endregion
     }
