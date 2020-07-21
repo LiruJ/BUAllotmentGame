@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Objects;
-using Assets.Scripts.Tiles;
 using UnityEngine;
 
 namespace Assets.Scripts.Player.Tools
@@ -7,11 +6,10 @@ namespace Assets.Scripts.Player.Tools
     public class ObjectPlacer : Tool
     {
         #region Inspector Fields
+        [Header("Maps")]
+        [Tooltip("The object tilemap of the world.")]
         [SerializeField]
         private ObjectTilemap objectTilemap = null;
-
-        [SerializeField]
-        private FloorTilemap floorTilemap = null;
         #endregion
 
         #region Fields
@@ -30,7 +28,7 @@ namespace Assets.Scripts.Player.Tools
                 TileIndicator.ShowGridGhost = value != null;
                 TileIndicator.ShowObjectGhost = value != null;
 
-                if (TileIndicator.ShowObjectGhost) TileIndicator.ChangeObjectGhost(value.TileObject);
+                if (TileIndicator.ShowObjectGhost) TileIndicator.ObjectGhost = value.TileObject;
                 if (TileIndicator.ShowGridGhost) TileIndicator.ChangeGridGhosts(value.Width, value.Height);
             }
         }
@@ -44,7 +42,7 @@ namespace Assets.Scripts.Player.Tools
 
             if (currentTile != null)
             {
-                if (currentTile.HasTileObject) TileIndicator.ChangeObjectGhost(currentTile.TileObject);
+                if (currentTile.HasTileObject) TileIndicator.ObjectGhost = currentTile.TileObject;
                 TileIndicator.ChangeGridGhosts(currentTile.Width, currentTile.Height);
             }
 
@@ -55,22 +53,21 @@ namespace Assets.Scripts.Player.Tools
         public override void HandleInput()
         {
             // Calculate the current tile position of the player's mouse.
-            Vector3Int currentTilePosition = toolBelt.ScreenPositionToCell(Input.mousePosition);
+            Vector3Int tilePosition = toolBelt.ScreenPositionToCell(Input.mousePosition);
 
-            TileIndicator.UpdatePosition(currentTilePosition);
+            TileIndicator.UpdatePosition(tilePosition);
 
             // Update the placement ghost.
             if (CurrentTile != null)
             {
-                TileIndicator.UpdateGridGhost(currentTilePosition, CurrentTile.Width, CurrentTile.Height,
-                    (x, y) => CurrentTile.TileIsValid(objectTilemap, floorTilemap, x, y, !string.IsNullOrWhiteSpace(CurrentTile.RequiredFloor), CurrentTile.RequiredFloor));
 
-                TileIndicator.UpdateObjectGhost(!CurrentTile.HasTileLogic || CurrentTile.TileLogic.CanPlaceTile(objectTilemap, CurrentTile, currentTilePosition.x, currentTilePosition.z));
+                TileIndicator.UpdateGridGhost(tilePosition, CurrentTile.Width, CurrentTile.Height, (x, y) => CurrentTile != null && CurrentTile.TileIsValid(objectTilemap, x, y));
+                TileIndicator.UpdateObjectGhost(CurrentTile != null && CurrentTile.CanPlace(objectTilemap, tilePosition.x, tilePosition.z));
 
-                // If the player clicks, place the currently selected tile.
-                if (Input.GetMouseButtonDown(0))
+                // If the player clicks and their mouse is not over the UI, place the currently selected tile.
+                if (Input.GetMouseButtonDown(0) && !eventSystem.IsPointerOverGameObject())
                 {
-                    if (objectTilemap.IsInRange(currentTilePosition)) objectTilemap.SetTile(currentTilePosition.x, currentTilePosition.z, CurrentTile);
+                    objectTilemap.SetTile(tilePosition.x, tilePosition.z, CurrentTile);
                 }
             }
         }

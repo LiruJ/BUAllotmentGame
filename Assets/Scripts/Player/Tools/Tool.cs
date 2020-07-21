@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Map;
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Player.Tools
 {
@@ -8,6 +9,11 @@ namespace Assets.Scripts.Player.Tools
     public class Tool : MonoBehaviour
     {
         #region Inspector Fields
+        [Header("Dependencies")]
+        [SerializeField]
+        protected EventSystem eventSystem = null;
+
+        [Header("Tool Settings")]
         [SerializeField]
         private ToolType toolType = ToolType.None;
         #endregion
@@ -36,7 +42,7 @@ namespace Assets.Scripts.Player.Tools
             TileIndicator.ShowGridGhost = false;
             TileIndicator.ShowObjectGhost = false;
 
-            TileIndicator.ChangeObjectGhost(null);
+            TileIndicator.ObjectGhost = null;
         }
         #endregion
 

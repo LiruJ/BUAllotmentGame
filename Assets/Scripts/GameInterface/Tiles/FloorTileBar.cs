@@ -1,7 +1,9 @@
-﻿using Assets.Scripts.Tiles;
+﻿using Assets.Scripts.BUCore.TileMap;
+using Assets.Scripts.Tiles;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.GameInterface.Tiles
 {
@@ -25,6 +27,15 @@ namespace Assets.Scripts.GameInterface.Tiles
         private void Start()
         {
             createIcons(floorTileset);
+        }
+
+        protected override void initialiseTileIcon<T>(Tile<T> tile, TileIcon tileIcon)
+        {
+            if (!(tile is FloorTile floorTile)) return;
+
+            RawImage tileImage = tileIcon.GetComponent<RawImage>();
+
+            tileImage.texture = floorTile.Material.mainTexture;
         }
         #endregion
 

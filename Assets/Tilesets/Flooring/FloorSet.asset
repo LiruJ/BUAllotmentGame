@@ -15,10 +15,18 @@ MonoBehaviour:
   emptyTileName: Empty
   tiles:
   - name: Dirt
-    tileObject: {fileID: 1072970950814904845, guid: edbfe68b24590524bb089773712d54cd,
-      type: 3}
+    tileObject: {fileID: 0}
     floorTileLogic: {fileID: 0}
+    material: {fileID: 2100000, guid: 5330c3f6a4abd48469f6863a5df6ee7d, type: 2}
   - name: Grass
-    tileObject: {fileID: 2966889724577161017, guid: 6223b0a85352eaa4fb7d449a37e0f9ab,
-      type: 3}
+    tileObject: {fileID: 0}
     floorTileLogic: {fileID: 11400000, guid: 61f8d7c7625e60c45b435748a124f886, type: 2}
+    material: {fileID: 2100000, guid: 89ba91a2364388f4d9d0faf75c86bd5b, type: 2}
+  - name: FarmLand
+    tileObject: {fileID: 0}
+    floorTileLogic: {fileID: 0}
+    material: {fileID: 2100000, guid: c2157de6f8727f144839a797e90f8099, type: 2}
+  - name: Brick
+    tileObject: {fileID: 0}
+    floorTileLogic: {fileID: 0}
+    material: {fileID: 2100000, guid: f9faa4c7c2ec54a4a8fa1942d24233ab, type: 2}

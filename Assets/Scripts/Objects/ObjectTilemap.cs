@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.BUCore.TileMap;
-using Assets.Scripts.Tiles;
 using UnityEngine;
 
 namespace Assets.Scripts.Objects
@@ -9,28 +8,16 @@ namespace Assets.Scripts.Objects
         #region Inspector Fields
         [SerializeField]
         private ObjectTileset objectTileset = null;
-
-        #endregion
-
-        #region Fields
-        private BaseTilemap<FloorTileData> floorTilemap = null;
-        #endregion
-
-        #region Properties
-
         #endregion
 
         #region Initialisation Functions
-        private void Start()
+        protected override void Start()
         {
             // Set the tileset.
             Tileset = objectTileset;
 
-            // Set the floor tilemap.
-            floorTilemap = WorldMap.GetTilemap<FloorTileData>();
-
             // Initialise the internal map data.
-            initialiseData();
+            base.Start();
         }
         #endregion
 

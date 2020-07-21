@@ -21,8 +21,12 @@ namespace Assets.Scripts.GameInterface.Tiles
 
                 TileIcon tileIcon = newTileIcon.GetComponent<TileIcon>();
                 tileIcon.TileName = tile.Name;
+
+                initialiseTileIcon(tile, tileIcon);
             }
         }
+
+        protected virtual void initialiseTileIcon<T>(Tile<T> tile, TileIcon tileIcon) where T : ITileData { }
         #endregion
     }
 }

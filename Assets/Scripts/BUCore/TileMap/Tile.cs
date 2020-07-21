@@ -37,5 +37,14 @@ namespace Assets.Scripts.BUCore.TileMap
         /// <summary> Is fired when the tile is loaded by a <see cref="TileMap.Tileset"/>. </summary>
         public virtual void OnLoaded() { }
         #endregion
+
+        #region Tile Functions
+        /// <summary> Queries the given <paramref name="tile"/> against the given <paramref name="tilemap"/> using the given position, and checks that the tile can be placed. </summary>
+        /// <param name="tilemap"> The <see cref="BaseTilemap{T}"/> against which the <paramref name="tile"/> is being queried. </param>
+        /// <param name="x"> The x co-ordinate of the position. </param>
+        /// <param name="y"> The y co-ordinate of the position. </param>
+        /// <returns> True if the tile can be placed; otherwise, false. </returns>
+        public virtual bool CanPlace(BaseTilemap<T> tilemap, int x, int y) => true;
+        #endregion
     }
 }

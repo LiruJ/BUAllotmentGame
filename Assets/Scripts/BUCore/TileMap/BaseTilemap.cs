@@ -59,7 +59,7 @@ namespace Assets.Scripts.BUCore.TileMap
 
         #region Initialisation Functions
         /// <summary> Initialises this <see cref="BaseTilemap{T}"/> within the world. </summary>
-        protected void initialiseData()
+        protected virtual void Start()
         {
             // Throw an error if the world map object is missing.
             if (worldMap == null) { Debug.LogError("World map object is missing, tilemap cannot initialise.", this); return; }
@@ -81,6 +81,12 @@ namespace Assets.Scripts.BUCore.TileMap
         #endregion
 
         #region Tile Functions
+        public Tile<T> GetTile(int x, int y) => Tileset == null ? null : IsInRange(x, y) ? Tileset.GetTileFromIndex(this[x, y].Index) : null;
+
+        public string GetTileName(int x, int y) => Tileset == null ? null : IsInRange(x, y) ? Tileset.GetTileNameFromIndex(this[x, y].Index) : null;
+
+        public ushort GetTileIndex(int x, int y) => IsInRange(x, y) ? this[x, y].Index : (ushort)0;
+
         /// <summary> Sets the tile at the given <paramref name="x"/> and <paramref name="y"/> to the tile with the given <paramref name="name"/>. </summary>
         /// <param name="x"> The x co-ordinate of the position. </param>
         /// <param name="y"> The y co-ordinate of the position. </param>
@@ -100,8 +106,11 @@ namespace Assets.Scripts.BUCore.TileMap
         /// <remarks> If this function is overridden, be sure to call the OnTileDestroyed and OnTilePlaced functions. </remarks>
         public virtual void SetTile(int x, int y, Tile<T> tile)
         {
-            // If the tile has logic associated with it, query it first to ensure that the tile can be placed.
-            if (tile.HasTileLogic && !tile.TileLogic.CanPlaceTile(this, tile, x, y)) return;
+            // If the given position is out of range, do nothing.
+            if (!IsInRange(x, y)) return;
+
+            // If the tile cannot be placed here, return.
+            if (!tile.CanPlace(this, x, y)) return;
 
             // Set the index of the tile data at the given position to that of the given tile.
             setTileIndex(x, y, tile);
@@ -109,11 +118,8 @@ namespace Assets.Scripts.BUCore.TileMap
             // If the tile has logic, fire the tile destroyed function.
             if (tile.HasTileLogic) tile.TileLogic.OnTileDestroyed(this, x, y);
 
-            // If a GameObject already exists at the tile position, destroy it.
-            if (tileObjects[x, y] != null) Destroy(tileObjects[x, y]);
-
-            // Place the tile object if one exists.
-            if (tile.HasTileObject) placeTileObject(x, y, tile);
+            // Place the tile object and destroy the old one.
+            placeTileObject(x, y, tile);
 
             // If the tile has logic, fire the tile placed function.
             if (tile.HasTileLogic) tile.TileLogic.OnTilePlaced(this, x, y);
@@ -125,12 +131,16 @@ namespace Assets.Scripts.BUCore.TileMap
         /// <param name="tile"> The tile that the position is being set to. </param>
         protected virtual void setTileIndex(int x, int y, Tile<T> tile) => tileData[x, y].Index = Tileset.GetTileIndexFromName(tile.Name);
 
-        /// <summary> Is called by <see cref="SetTile(int, int, Tile{T})"/> in order to create the tile object at the given <paramref name="x"/> and <paramref name="y"/> position, only being called if the tile has an associated object. </summary>
+        /// <summary> Is called by <see cref="SetTile(int, int, Tile{T})"/> in order to create the tile object at the given <paramref name="x"/> and <paramref name="y"/> position. </summary>
         /// <param name="x"> The x co-ordinate of the position. </param>
         /// <param name="y"> The y co-ordinate of the position. </param>
         /// <param name="tile"> The tile whose object is being placed. </param>
+        /// <remarks> Handles destroying the old <see cref="GameObject"/> at the given position as well as creating a new one. This function is called even if the <paramref name="tile"/> has no tile object. </remarks>
         protected virtual void placeTileObject(int x, int y, Tile<T> tile)
         {
+            // If a GameObject already exists at the tile position, destroy it.
+            if (tileObjects[x, y] != null) Destroy(tileObjects[x, y]);
+
             // Do nothing if no tile object exists.
             if (!tile.HasTileObject) return;
 
@@ -156,6 +166,8 @@ namespace Assets.Scripts.BUCore.TileMap
         #endregion
 
         #region Update Functions
+        protected virtual void Update() => tryTick();
+
         protected void tryTick()
         {
             // If there should be no ticks, return immediately.
@@ -192,13 +204,13 @@ namespace Assets.Scripts.BUCore.TileMap
                     Tile<T> tile = Tileset.GetTileFromIndex(tileData[x, y].Index);
                     
                     // If the tile has logic, tick it.
-                    if (tile.HasTileLogic) tile.TileLogic.OnTick(this, x, y);
+                    if (tile != null && tile.HasTileLogic) tile.TileLogic.OnTick(this, x, y);
                 }
         }
         #endregion
 
         #region Validation Functions
-        private void OnValidate()
+        protected virtual void OnValidate()
         {
             // If the world map hasn't been set, try to resolve it.
             if (worldMap == null) worldMap = GetComponentInParent<BaseWorldMap>();

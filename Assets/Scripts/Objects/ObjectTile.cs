@@ -41,10 +41,36 @@ namespace Assets.Scripts.Objects
         #endregion
 
         #region Tile Functions
-        public bool TileIsValid(BaseTilemap<ObjectTileData> objectMap, BaseTilemap<FloorTileData> floorMap, int x, int y, bool checkFloor, string requiredFloor)
-            => objectMap.IsTileEmpty(x, y) && (!checkFloor || FloorIsValid(floorMap, x, y));
+        /// <summary> Calculates if the given tile position has no other objects and a valid floor. </summary>
+        /// <param name="tilemap"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public override bool CanPlace(BaseTilemap<ObjectTileData> tilemap, int x, int y)
+        {
+            // Check each tile in the area of the object.
+            for (int checkX = x; checkX < x + Width; checkX++)
+                for (int checkY = y; checkY < y + Height; checkY++)
+                    // If the area is not empty on the object map, or the floor is not valid on the floor map, return false.
+                    if (!TileIsValid(tilemap, checkX, checkY)) return false;
 
-        public bool FloorIsValid(BaseTilemap<FloorTileData> floorMap, int x, int y) => FloorIsValid(floorMap.Tileset.GetTileFromIndex(floorMap[x, y].Index));
+            // If the other checks have passed, return true.
+            return true;
+        }
+
+        public bool TileIsValid(BaseTilemap<ObjectTileData> objectMap, int x, int y)
+        {
+            // If this tile has an object already, return false.
+            if (!objectMap.IsTileEmpty(x, y)) return false;
+
+            // If the floor is not valid, return false.
+            if (!FloorIsValid(objectMap.WorldMap.GetTilemap<FloorTileData>(), x, y)) return false;
+
+            // If the other checks have passed, return true.
+            return true;
+        }
+
+        public bool FloorIsValid(BaseTilemap<FloorTileData> floorMap, int x, int y) => FloorIsValid(floorMap.GetTile(x, y));
 
         public bool FloorIsValid(Tile<FloorTileData> floorTile) => string.IsNullOrWhiteSpace(requiredFloor) || floorTile.Name == requiredFloor;
         #endregion
