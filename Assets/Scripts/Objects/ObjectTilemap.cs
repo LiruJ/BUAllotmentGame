@@ -3,9 +3,11 @@ using UnityEngine;
 
 namespace Assets.Scripts.Objects
 {
+    /// <summary> The type of tilemap that stores objects. </summary>
     public class ObjectTilemap : BaseTilemap<ObjectTileData>
     {
         #region Inspector Fields
+        [Tooltip("The tileset that holds the object tiles.")]
         [SerializeField]
         private ObjectTileset objectTileset = null;
         #endregion
@@ -22,6 +24,10 @@ namespace Assets.Scripts.Objects
         #endregion
 
         #region Tile Functions
+        /// <summary> Is fired when a tile is changed on the map, allows the entire area of the object to have its index set. </summary>
+        /// <param name="x"> The x co-ordinate of the position. </param>
+        /// <param name="y"> The y co-ordinate of the position. </param>
+        /// <param name="tile"> The <see cref="Tile{T}"/> that is being set. </param>
         protected override void setTileIndex(int x, int y, Tile<ObjectTileData> tile)
         {
             // Get the object tile.
@@ -34,8 +40,6 @@ namespace Assets.Scripts.Objects
             for (int placeX = x; placeX < x + objectTile.Width; placeX++)
                 for (int placeY = y; placeY < y + objectTile.Height; placeY++)
                     this[placeX, placeY] = new ObjectTileData() { Index = index };
-
-            base.setTileIndex(x, y, tile);
         }
         #endregion
     }

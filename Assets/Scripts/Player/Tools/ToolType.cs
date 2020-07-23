@@ -1,5 +1,6 @@
 ﻿namespace Assets.Scripts.Player.Tools
 {
+    /// <summary> The type/function of a tool. </summary>
     public enum ToolType
     {
         None = 0,

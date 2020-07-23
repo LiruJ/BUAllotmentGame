@@ -22,35 +22,33 @@ namespace Assets.Scripts.Tiles
 
             // Initialise the internal map data.
             base.Start();
-
-            for (int x = 0; x < Width; x++)
-                for (int y = 0; y < Height; y++)
-                {
-                    // Create the tile object first.
-                    GameObject tileBase = Instantiate(tilePrefab, transform);
-                    tileBase.transform.localPosition = Grid.CellToLocal(new Vector3Int(x, 0, y));
-                    tileBase.transform.localRotation = Quaternion.identity;
-                    tileBase.name = $"{x}, {y}";
-
-                    tileObjects[x, y] = tileBase;
-
-                    SetTile(x, y, Tileset.GetTileFromName(startingTile));
-                }
-
-            SetTile(Width / 2, Height / 2, Tileset.GetTileFromName("Grass"));
         }
         #endregion
 
         #region Tile Functions
         protected override void placeTileObject(int x, int y, Tile<FloorTileData> tile)
         {
-            // Get the tile base object, if it is null or has no renderer, do nothing.
+            // If the tile object doesn't exist, create it.
             GameObject tileObject = tileObjects[x, y];
-            if (tileObject == null || !tileObject.TryGetComponent(out MeshRenderer tileRenderer)) return;
+            if (tileObject == null)
+            {
+                // Create the tile object.
+                tileObject = Instantiate(tilePrefab, transform);
+                tileObject.transform.localPosition = Grid.CellToLocal(new Vector3Int(x, 0, y));
+                tileObject.transform.localRotation = Quaternion.identity;
+                tileObject.name = $"{x}, {y}";
+
+                // Set the tileobject at the position to the newly created one.
+                tileObjects[x, y] = tileObject;
+            }
+
+            // Try get the mesh renderer from the tile base. If non exists, do nothing.
+            if (!tileObject.TryGetComponent(out MeshRenderer tileRenderer)) return;
 
             // Get the tile from the tileset, if it is invalid, do nothing.
             if (!(tile is FloorTile floorTile)) return;
 
+            // Set the material of the tile.
             tileRenderer.material = floorTile.Material;
         }
         #endregion

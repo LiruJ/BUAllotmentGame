@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Player.Tools
 {
+    /// <summary> Holds the player's <see cref="Tool"/>s. </summary>
     public class ToolBelt : MonoBehaviour
     {
         #region Inspector Fields
@@ -22,29 +23,31 @@ namespace Assets.Scripts.Player.Tools
         #endregion
 
         #region Fields
+        /// <summary> The <see cref="Tool"/>s keyed by <see cref="ToolType"/>. </summary>
         private readonly Dictionary<ToolType, Tool> toolsByType = new Dictionary<ToolType, Tool>();
         #endregion
 
         #region Properties
+        /// <summary> Gets the currently active <see cref="Tool"/>, or null if none is selected. </summary>
         public Tool CurrentTool { get; private set; }
 
+        /// <summary> Gets the <see cref="ToolType"/> of the <see cref="CurrentTool"/>. </summary>
         public ToolType CurrentToolType => CurrentTool.ToolType;
 
+        /// <summary> Gets the camera used by the player. </summary>
         public Camera PlayerCamera => playerCamera;
 
+        /// <summary> Gets the main world map. </summary>
         public WorldMap WorldMap => worldMap;
 
+        /// <summary> Gets the object used to indicate object placement. </summary>
         public PlacementIndicator TileIndicator => tileIndicator;
         #endregion
 
         #region Initialisation Functions
-        private void Start()
-        {
-
-        }
-
         private void Awake()
         {
+            // Add each tool in the children of the containing GameObject to the dictionary, keyed by its type.
             foreach (Tool tool in GetComponentsInChildren<Tool>())
                 toolsByType.Add(tool.ToolType, tool);
 
@@ -56,33 +59,37 @@ namespace Assets.Scripts.Player.Tools
         #region Update Functions
         private void Update()
         {
-            if (CurrentTool != null)
-            {
-                CurrentTool.HandleInput();
-            }
-        }
-
-        private void FixedUpdate()
-        {
-
+            // If a tool is currently selected, pass through the update function.
+            if (CurrentTool != null) CurrentTool.HandleInput();
         }
         #endregion
 
         #region Tool functions
+        /// <summary> Changes the <see cref="CurrentTool"/> to that with the given <paramref name="toolType"/>. </summary>
+        /// <param name="toolType"> The type of tool to switch to. </param>
         public void SwitchTool(ToolType toolType)
         {
+            // If the tool exists within the dictionary, switch to it.
             if (toolsByType.TryGetValue(toolType, out Tool tool))
             {
+                // If a tool is currently selected, fire the deselected event.
                 if (CurrentTool != null) CurrentTool.OnDeselected();
+
+                // Switch the current tool to the one within the dictionary.
                 CurrentTool = tool;
 
+                // If the new tool exists, fire the selected event.
                 if (CurrentTool != null) CurrentTool.OnSelected();
+                // Otherwise; hide the indicators.
                 else { TileIndicator.ShowGridGhost = false; TileIndicator.ShowObjectGhost = false; }
             }
         }
         #endregion
 
         #region Screen Functions
+        /// <summary> Calculates the position of the tile at the given <paramref name="screenPosition"/>. </summary>
+        /// <param name="screenPosition"> The position on the screen. </param>
+        /// <returns> The tile position at the given <paramref name="screenPosition"/>. </returns>
         public Vector3Int ScreenPositionToCell(Vector3 screenPosition)
         {
             // Create the ray from the position.

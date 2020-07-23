@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Tiles.Logic
 {
+    /// <summary> A floor tile that can spread to specific other floor tiles, e.g. grass. </summary>
     [CreateAssetMenu(fileName = "New Spreadable Tile", menuName = "Tilemap/Tiles/Grass")]
     public class SpreadableTile : FloorTileLogic
     {
@@ -31,6 +32,11 @@ namespace Assets.Scripts.Tiles.Logic
         #endregion
 
         #region Spread Functions
+        /// <summary> Attempts to spread to the surrounding 4 adjacent tiles, or all 8 if <see cref="spreadDiagonally"/> is true. </summary>
+        /// <param name="tilemap"> The tilemap. </param>
+        /// <param name="tile"> The tile that is being spread. </param>
+        /// <param name="x"> The central x position. </param>
+        /// <param name="y"> The central y position. </param>
         private void trySpread(BaseTilemap<FloorTileData> tilemap, Tile<FloorTileData> tile, int x, int y)
         {
             // If the given tile is null, do nothing.
@@ -52,6 +58,12 @@ namespace Assets.Scripts.Tiles.Logic
             if (trySpreadToTile(tilemap, tile, x - 1, y + 1)) return;
         }
 
+        /// <summary> Tries to spread the given <paramref name="tile"/> to the given <paramref name="x"/> and <paramref name="y"/> positions. </summary>
+        /// <param name="tilemap"> The tilemap. </param>
+        /// <param name="tile"> The tile that is being spread. </param>
+        /// <param name="x"> The x position that is being spread to. </param>
+        /// <param name="y"> The y position that is being spread to. </param>
+        /// <returns> True if the tile spread, otherwise; false. </returns>
         private bool trySpreadToTile(BaseTilemap<FloorTileData> tilemap, Tile<FloorTileData> tile, int x, int y)
         {
             // If the tile is the spreadable material, can be placed, and the random roll was successful, spread the grass and return true.

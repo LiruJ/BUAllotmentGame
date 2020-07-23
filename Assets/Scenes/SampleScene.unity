@@ -769,8 +769,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   worldMap: {fileID: 625718700}
-  startingTile: Dirt
-  ticksPerSecond: 1
+  startingTileName: Grass
+  timeBetweenTicks: 1
   floorTileset: {fileID: 11400000, guid: 6f3398c4d0ab47640a600955eb70581a, type: 2}
   tilePrefab: {fileID: 5329610632287459347, guid: 64f0ddc871997584e854b7749ee68f16,
     type: 3}
@@ -1934,8 +1934,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   worldMap: {fileID: 625718700}
-  startingTile: Air
-  ticksPerSecond: 1
+  startingTileName: Empty
+  timeBetweenTicks: 1
   objectTileset: {fileID: 11400000, guid: b5ba6fe5df959574a8ef42763d8ee791, type: 2}
 --- !u!1001 &2469470069524699756
 PrefabInstance:
