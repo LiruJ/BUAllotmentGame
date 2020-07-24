@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.BUCore.TileMap
 {
+    /// <summary> The base world map, allowing for <see cref="BaseTilemap{T}"/>s to be registered. </summary>
     public class BaseWorldMap : MonoBehaviour
     {
         #region Inspector Fields
@@ -25,6 +26,7 @@ namespace Assets.Scripts.BUCore.TileMap
         #endregion
 
         #region Fields
+        /// <summary> The <see cref="BaseTilemap{T}"/>s keyed by <see cref="Type"/>. </summary>
         private readonly Dictionary<Type, object> mapsByType = new Dictionary<Type, object>();
         #endregion
 
@@ -40,19 +42,35 @@ namespace Assets.Scripts.BUCore.TileMap
         #endregion
 
         #region Tilemap Functions
+        /// <summary> Get the registered <see cref="BaseTilemap{T}"/> with the given <typeparamref name="T"/>. </summary>
+        /// <typeparam name="T"> The <see cref="Type"/> of the <see cref="BaseTilemap{T}"/>. </typeparam>
+        /// <returns> The <see cref="BaseTilemap{T}"/> with the matching <see cref="Type"/>. </returns>
         public BaseTilemap<T> GetTilemap<T>() where T : ITileData
             => mapsByType.TryGetValue(typeof(T), out object tilemap) ? tilemap as BaseTilemap<T> : findAndRegisterTilemap<T>();
 
+        /// <summary> Finds the <see cref="BaseTilemap{T}"/> with the given <typeparamref name="T"/> from the <see cref="GameObject"/>'s children of this behaviour, and registers it. </summary>
+        /// <typeparam name="T"> The <see cref="Type"/> of the <see cref="BaseTilemap{T}"/>. </typeparam>
+        /// <returns> The <see cref="BaseTilemap{T}"/> with the matching <see cref="Type"/>, or null if none was found. </returns>
         private BaseTilemap<T> findAndRegisterTilemap<T>() where T : ITileData
         {
+            // Get the tilemap within the children of this GameObject.
             BaseTilemap<T> tilemap = GetComponentInChildren<BaseTilemap<T>>();
+
+            // If a tilemap was found, register it.
             if (tilemap != null) RegisterTilemap(tilemap);
+
+            // Return the tilemap, which could be null if none was found.
             return tilemap;
         }
 
+        /// <summary> Registers the given <paramref name="tilemap"/> keyed by the given <typeparamref name="T"/>. </summary>
+        /// <typeparam name="T"> The <see cref="Type"/> of the <see cref="BaseTilemap{T}"/>. </typeparam>
         public void RegisterTilemap<T>(BaseTilemap<T> tilemap) where T : ITileData
         {
+            // If the given tilemap is null, do nothing.
             if (tilemap == null) return;
+
+            // Add the tilemap keyed by the given type.
             mapsByType.Add(typeof(T), tilemap);
         }
         #endregion

@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Player.Tools
 {
+    /// <summary> The tool that allows the player to place floor tiles. </summary>
     public class FloorPlacer : Tool
     {
         #region Inspector Fields
@@ -18,6 +19,7 @@ namespace Assets.Scripts.Player.Tools
         #endregion
 
         #region Fields
+        /// <summary> The currently selected floor tile. </summary>
         private FloorTile currentTile;
         #endregion
 
@@ -28,8 +30,10 @@ namespace Assets.Scripts.Player.Tools
             get => currentTile;
             set
             {
+                // Set the current tile.
                 currentTile = value;
 
+                // If the current tile exists, show the placement ghost, otherwise; hide it.
                 TileIndicator.ShowObjectGhost = value != null;
             }
         }
@@ -38,6 +42,7 @@ namespace Assets.Scripts.Player.Tools
         #region Tool Functions
         public override void OnSelected()
         {
+            // Initialise the tile placement ghost.
             TileIndicator.ShowGridGhost = false;
             TileIndicator.ShowObjectGhost = currentTile != null;
             TileIndicator.ObjectGhost = tileBasePrefab;
@@ -50,18 +55,17 @@ namespace Assets.Scripts.Player.Tools
             // Calculate the current tile position of the player's mouse.
             Vector3Int tilePosition = toolBelt.ScreenPositionToCell(Input.mousePosition);
 
+            // Update the position of the indicator.
             TileIndicator.UpdatePosition(tilePosition);
 
-            // Update the placement ghost.
+            // Only handle input and indicate placement validity if a tile is currently being placed.
             if (CurrentTile != null)
             {
-                TileIndicator.UpdateObjectGhost(CurrentTile != null && CurrentTile.CanPlace(floorTilemap, tilePosition.x, tilePosition.z));
+                // Update the colour of the object ghost based on the validity of the current placement.
+                TileIndicator.UpdateObjectGhost(CurrentTile.CanPlace(floorTilemap, tilePosition.x, tilePosition.z));
 
                 // If the player clicks and their mouse is not over the UI, place the currently selected tile.
-                if (Input.GetMouseButtonDown(0) && !eventSystem.IsPointerOverGameObject())
-                {
-                    floorTilemap.SetTile(tilePosition.x, tilePosition.z, CurrentTile);
-                }
+                if (Input.GetMouseButtonDown(0) && !eventSystem.IsPointerOverGameObject()) floorTilemap.SetTile(tilePosition.x, tilePosition.z, CurrentTile);
             }
         }
         #endregion
