@@ -5,7 +5,7 @@ namespace Assets.Scripts.BUCore.TileMap
 {
     /// <summary> Holds a list of tiles correlating to names and indices, used by a <see cref="BaseTilemap{T}"/>. </summary>
     /// <typeparam name="T"> The type of <see cref="ITileData"/> to store. </typeparam>
-    public abstract class Tileset<T> : ScriptableObject where T : ITileData
+    public abstract class Tileset<T> : ScriptableObject where T : struct, ITileData
     {
         #region Inspector Fields
         [Header("Settings")]

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d05eccb4982a8b4fb1cb9d6e6105635, type: 3}
+  m_Name: Crops
+  m_EditorClassIdentifier: 
+  emptyTileName: Empty
+  tiles:
+  - name: Tomato
+    tileObject: {fileID: -927199367670048503, guid: e697a1e87d608344b837004f9c9cfe64,
+      type: 3}
+    cropTileLogic: {fileID: 11400000, guid: 833e262c77ed23a47b3c75e939da5b47, type: 2}
+    requiredFloor: FarmLand

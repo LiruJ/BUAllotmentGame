@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Assets.Scripts.Tiles.Logic
 {
     /// <summary> A floor tile that can spread to specific other floor tiles, e.g. grass. </summary>
-    [CreateAssetMenu(fileName = "New Spreadable Tile", menuName = "Tilemap/Tiles/Grass")]
+    [CreateAssetMenu(fileName = "New Spreadable Tile", menuName = "Tilemap/Tiles/Floor/Grass")]
     public class SpreadableTile : FloorTileLogic
     {
         #region Inspector Fields

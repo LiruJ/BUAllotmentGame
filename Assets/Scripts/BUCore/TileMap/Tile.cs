@@ -4,7 +4,7 @@ namespace Assets.Scripts.BUCore.TileMap
 {
     /// <summary> Represents a collection of data that will represent a tile within a <see cref="TileMap"/>. </summary>
     /// <typeparam name="T"> The type of <see cref="ITileData"/> that this tile works on. </typeparam>
-    public abstract class Tile<T> where T : ITileData
+    public abstract class Tile<T> where T : struct, ITileData
     {
         #region Inspector Fields
         [Tooltip("The name of the tile, used to identify and place them.")]

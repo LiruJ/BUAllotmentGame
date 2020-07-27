@@ -3,13 +3,16 @@ using UnityEngine;
 
 namespace Assets.Scripts.Tiles
 {
+    /// <summary> The <see cref="BaseTilemap{T}"/> for the floor layer. </summary>
     public class FloorTilemap : BaseTilemap<FloorTileData>
     {
         #region Inspector Fields
+        [Tooltip("The tileset for the floor tiles.")]
         [SerializeField]
         private FloorTileset floorTileset = null;
 
         [Header("Prefabs")]
+        [Tooltip("The prefab used for each floor tile's base.")]
         [SerializeField]
         private GameObject tilePrefab = null;
         #endregion

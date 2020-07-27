@@ -3,7 +3,7 @@
 namespace Assets.Scripts.BUCore.TileMap
 {
     /// <summary> Represents the logic that runs on data from a tile and can modify the map. </summary>
-    public abstract class TileLogic<T> : ScriptableObject where T : ITileData
+    public abstract class TileLogic<T> : ScriptableObject where T : struct, ITileData
     {
         #region Tile Functions
         /// <summary> Is fired immediately after a tile is placed. </summary>

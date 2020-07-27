@@ -4,7 +4,7 @@ namespace Assets.Scripts.BUCore.TileMap
 {
     /// <summary> The base tilemap that handles tile data and gameobjects, belonging to a <see cref="BaseWorldMap"/>. </summary>
     /// <typeparam name="T"> The type of <see cref="ITileData"/> to store. </typeparam>
-    public abstract class BaseTilemap<T> : MonoBehaviour where T : ITileData 
+    public abstract class BaseTilemap<T> : MonoBehaviour where T : struct, ITileData
     {
         #region Inspector Fields
         [Header("Dependencies")]
@@ -137,30 +137,27 @@ namespace Assets.Scripts.BUCore.TileMap
             // If the given position is out of range, do nothing.
             if (!IsInRange(x, y)) return;
 
-            // If the given tile is null, do nothing.
-            if (tile == null) return;
-
             // If the tile cannot be placed here, do nothing.
-            if (!tile.CanPlace(this, x, y)) return;
+            else if (tile != null && !tile.CanPlace(this, x, y)) return;
+
+            // If the old tile has logic, fire the tile destroyed function.
+            if (!IsTileEmpty(x, y) && GetTile(x, y).HasTileLogic) GetTile(x, y).TileLogic.OnTileDestroyed(this, x, y);
 
             // Set the index of the tile data at the given position to that of the given tile.
             setTileIndex(x, y, tile);
-
-            // If the tile has logic, fire the tile destroyed function.
-            if (tile.HasTileLogic) tile.TileLogic.OnTileDestroyed(this, x, y);
 
             // Place the tile object and destroy the old one.
             placeTileObject(x, y, tile);
 
             // If the tile has logic, fire the tile placed function.
-            if (tile.HasTileLogic) tile.TileLogic.OnTilePlaced(this, x, y);
+            if (tile != null && tile.HasTileLogic) tile.TileLogic.OnTilePlaced(this, x, y);
         }
 
         /// <summary> Is called by <see cref="SetTile(int, int, Tile{T})"/> in order to set the index of the tile at the given <paramref name="x"/> and <paramref name="y"/> position. </summary>
         /// <param name="x"> The x co-ordinate of the position. </param>
         /// <param name="y"> The y co-ordinate of the position. </param>
         /// <param name="tile"> The tile that the position is being set to. </param>
-        protected virtual void setTileIndex(int x, int y, Tile<T> tile) => tileData[x, y].Index = Tileset.GetTileIndexFromName(tile.Name);
+        protected virtual void setTileIndex(int x, int y, Tile<T> tile) => tileData[x, y].Index = tile == null ? (ushort)0 : Tileset.GetTileIndexFromName(tile.Name);
 
         /// <summary> Is called by <see cref="SetTile(int, int, Tile{T})"/> in order to create the tile object at the given <paramref name="x"/> and <paramref name="y"/> position. </summary>
         /// <param name="x"> The x co-ordinate of the position. </param>
@@ -173,7 +170,7 @@ namespace Assets.Scripts.BUCore.TileMap
             if (tileObjects[x, y] != null) Destroy(tileObjects[x, y]);
 
             // Do nothing if no tile object exists.
-            if (!tile.HasTileObject) return;
+            if (tile == null || !tile.HasTileObject) return;
 
             // Instantiate the tile's GameObject, positioning it within the grid and setting its parent to this map's GameObject.
             GameObject tileObject = Instantiate(tile.TileObject, transform);
@@ -213,6 +210,12 @@ namespace Assets.Scripts.BUCore.TileMap
         /// <param name="y"> The y co-ordinate of the position. </param>
         /// <returns> True if the <see cref="Tile{T}"/> at the given <paramref name="x"/> and <paramref name="y"/> positions is empty, false otherwise. </returns>
         public bool IsTileEmpty(int x, int y) => IsTile(x, y, Tileset.EmptyTileName);
+
+        /// <summary> Gets the <see cref="GameObject"/> associated to a tile at the given <paramref name="x"/> and <paramref name="y"/> positions. </summary>
+        /// <param name="x"> The x co-ordinate of the position. </param>
+        /// <param name="y"> The y co-ordinate of the position. </param>
+        /// <returns> The <see cref="GameObject"/> at the given position, or null if the position is out of range or no object exists. </returns>
+        public GameObject GetTileObject(int x, int y) => IsInRange(x, y) ? tileObjects[x, y] : null;
         #endregion
 
         #region Update Functions
@@ -248,6 +251,18 @@ namespace Assets.Scripts.BUCore.TileMap
         /// <summary> Perform a tick on each tile within the map. </summary>
         private void doTick()
         {
+            if (Tileset == null)
+            {
+                Debug.LogError("Tileset is null, cannot tick.", this);
+                return;
+            }
+
+            if (tileData == null)
+            {
+                Debug.LogError("Tile data is null, cannot tick.", this);
+                return;
+            }
+
             // Go over each tile in the map.
             for (int x = 0; x < Width; x++)
                 for (int y = 0; y < Height; y++)
