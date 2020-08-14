@@ -32,7 +32,27 @@ namespace Assets.Scripts.Player.Tools
         public Tool CurrentTool { get; private set; }
 
         /// <summary> Gets the <see cref="ToolType"/> of the <see cref="CurrentTool"/>. </summary>
-        public ToolType CurrentToolType => CurrentTool.ToolType;
+        public ToolType CurrentToolType
+        {
+            get => CurrentTool.ToolType;
+            set
+            {
+                // If the tool exists within the dictionary, switch to it.
+                if (toolsByType.TryGetValue(value, out Tool tool))
+                {
+                    // If a tool is currently selected, fire the deselected event.
+                    if (CurrentTool != null) CurrentTool.OnDeselected();
+
+                    // Switch the current tool to the one within the dictionary.
+                    CurrentTool = tool;
+
+                    // If the new tool exists, fire the selected event.
+                    if (CurrentTool != null) CurrentTool.OnSelected();
+                    // Otherwise; hide the indicators.
+                    else { TileIndicator.ShowGridGhost = false; TileIndicator.ShowObjectGhost = false; }
+                }
+            }
+        }
 
         /// <summary> Gets the camera used by the player. </summary>
         public Camera PlayerCamera => playerCamera;
@@ -69,20 +89,7 @@ namespace Assets.Scripts.Player.Tools
         /// <param name="toolType"> The type of tool to switch to. </param>
         public void SwitchTool(ToolType toolType)
         {
-            // If the tool exists within the dictionary, switch to it.
-            if (toolsByType.TryGetValue(toolType, out Tool tool))
-            {
-                // If a tool is currently selected, fire the deselected event.
-                if (CurrentTool != null) CurrentTool.OnDeselected();
 
-                // Switch the current tool to the one within the dictionary.
-                CurrentTool = tool;
-
-                // If the new tool exists, fire the selected event.
-                if (CurrentTool != null) CurrentTool.OnSelected();
-                // Otherwise; hide the indicators.
-                else { TileIndicator.ShowGridGhost = false; TileIndicator.ShowObjectGhost = false; }
-            }
         }
         #endregion
 

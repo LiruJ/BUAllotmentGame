@@ -54,6 +54,10 @@ namespace Assets.Scripts.Player.Tools
         }
         #endregion
 
+        #region Tool Functions
+        public void SetAsCurrentTool() => toolBelt.CurrentToolType = toolType;
+        #endregion
+
         #region Update Functions
         /// <summary> Is fired every update when this tool is selected. </summary>
         public virtual void HandleInput() { }

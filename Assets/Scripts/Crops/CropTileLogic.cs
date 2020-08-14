@@ -2,5 +2,5 @@
 
 namespace Assets.Scripts.Crops
 {
-    public class CropTileLogic : TileLogic<CropTileData> { }
+    public class CropTileLogic : TileLogic<CropTileData>  { }
 }

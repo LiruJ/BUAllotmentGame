@@ -18,7 +18,7 @@ namespace Assets.Scripts.GameInterface.Tiles
         /// <summary> Populates the tile bar, creating a new instance of the <see cref="tileIconPrefab"/> for each element within the given <paramref name="collection"/>. </summary>
         /// <typeparam name="T"> The type of <see cref="ITileData"/> within the given <paramref name="collection"/>. </typeparam>
         /// <param name="collection"> The collection of <see cref="ITileData"/>. </param>
-        protected void createIcons<T>(IEnumerable<Tile<T>> collection) where T : ITileData
+        protected void createIcons<T>(IEnumerable<Tile<T>> collection) where T : struct, ITileData
         {
             foreach (Tile<T> tile in collection)
             {
@@ -35,7 +35,7 @@ namespace Assets.Scripts.GameInterface.Tiles
         /// <typeparam name="T"> The type of <see cref="ITileData"/> of the given <paramref name="tile"/>. </typeparam>
         /// <param name="tile"> The <see cref="Tile{T}"/> within the collection. </param>
         /// <param name="tileIcon"> The UI icon representing the <paramref name="tile"/>. </param>
-        protected virtual void initialiseTileIcon<T>(Tile<T> tile, TileIcon tileIcon) where T : ITileData { }
+        protected virtual void initialiseTileIcon<T>(Tile<T> tile, TileIcon tileIcon) where T : struct, ITileData { }
         #endregion
     }
 }

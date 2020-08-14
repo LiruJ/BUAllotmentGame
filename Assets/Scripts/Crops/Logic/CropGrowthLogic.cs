@@ -1,5 +1,5 @@
 ﻿using Assets.Scripts.BUCore.TileMap;
-using System;
+using Assets.Scripts.Creatures;
 using UnityEngine;
 
 namespace Assets.Scripts.Crops.Logic
@@ -9,6 +9,10 @@ namespace Assets.Scripts.Crops.Logic
     public class CropGrowthLogic : CropTileLogic
     {
         #region Inspector Fields
+        [Header("Prefabs")]
+        [SerializeField]
+        private Creature creaturePrefab = null;
+
         [Header("Crop Settings")]
         [Tooltip("How many ticks are required for this crop to be considered mature.")]
         [Range(byte.MinValue, byte.MaxValue)]
@@ -29,6 +33,13 @@ namespace Assets.Scripts.Crops.Logic
             crop.Age++;
             tilemap[x, y] = crop;
 
+            // If the age is greater than or equal to the mature age, spawn a creature.
+            if (crop.Age >= matureAge)
+            {
+                CropTilemap cropTilemap = tilemap as CropTilemap;
+                cropTilemap.CreatureManager.SpawnCreature(creaturePrefab, x, y, cropTilemap.GetCropStats(x, y));
+            }
+
             // If the age is greater than or equal to the death age, unset the tile.
             if (crop.Age >= deathAge)
             {
@@ -36,13 +47,19 @@ namespace Assets.Scripts.Crops.Logic
             }
             else
             {
-                tilemap.GetTileObject(x, y).transform.localScale = new Vector3(1, Mathf.Min((float)crop.Age / matureAge, 1), 1);
+                // Scale the plant.
+                scalePlant(tilemap, x, y, crop);
             }
         }
 
-        public override void OnTileDestroyed(BaseTilemap<CropTileData> tilemap, int x, int y)
+        private void scalePlant(BaseTilemap<CropTileData> tilemap, int x, int y, CropTileData crop)
         {
-            tilemap[x, y] = new CropTileData() { Index = tilemap[x, y].Index, Age = 0 };
+            tilemap.GetTileObject(x, y).transform.localScale = new Vector3(1, Mathf.Min((float)crop.Age / matureAge, 1), 1);
+        }
+
+        public override void OnTilePlaced(BaseTilemap<CropTileData> tilemap, int x, int y)
+        {
+            scalePlant(tilemap, x, y, tilemap[x, y]);
         }
         #endregion
     }

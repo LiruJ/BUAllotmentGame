@@ -7,5 +7,7 @@ namespace Assets.Scripts.Crops
         public ushort Index { get; set; }
 
         public byte Age { get; set; }
+
+        public ushort StatsIndex { get; set; }
     }
 }

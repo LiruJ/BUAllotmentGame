@@ -45,13 +45,13 @@ namespace Assets.Scripts.BUCore.TileMap
         /// <summary> Get the registered <see cref="BaseTilemap{T}"/> with the given <typeparamref name="T"/>. </summary>
         /// <typeparam name="T"> The <see cref="Type"/> of the <see cref="BaseTilemap{T}"/>. </typeparam>
         /// <returns> The <see cref="BaseTilemap{T}"/> with the matching <see cref="Type"/>. </returns>
-        public BaseTilemap<T> GetTilemap<T>() where T : ITileData
+        public BaseTilemap<T> GetTilemap<T>() where T : struct, ITileData
             => mapsByType.TryGetValue(typeof(T), out object tilemap) ? tilemap as BaseTilemap<T> : findAndRegisterTilemap<T>();
 
         /// <summary> Finds the <see cref="BaseTilemap{T}"/> with the given <typeparamref name="T"/> from the <see cref="GameObject"/>'s children of this behaviour, and registers it. </summary>
         /// <typeparam name="T"> The <see cref="Type"/> of the <see cref="BaseTilemap{T}"/>. </typeparam>
         /// <returns> The <see cref="BaseTilemap{T}"/> with the matching <see cref="Type"/>, or null if none was found. </returns>
-        private BaseTilemap<T> findAndRegisterTilemap<T>() where T : ITileData
+        private BaseTilemap<T> findAndRegisterTilemap<T>() where T : struct, ITileData
         {
             // Get the tilemap within the children of this GameObject.
             BaseTilemap<T> tilemap = GetComponentInChildren<BaseTilemap<T>>();
@@ -65,7 +65,7 @@ namespace Assets.Scripts.BUCore.TileMap
 
         /// <summary> Registers the given <paramref name="tilemap"/> keyed by the given <typeparamref name="T"/>. </summary>
         /// <typeparam name="T"> The <see cref="Type"/> of the <see cref="BaseTilemap{T}"/>. </typeparam>
-        public void RegisterTilemap<T>(BaseTilemap<T> tilemap) where T : ITileData
+        public void RegisterTilemap<T>(BaseTilemap<T> tilemap) where T : struct, ITileData
         {
             // If the given tilemap is null, do nothing.
             if (tilemap == null) return;

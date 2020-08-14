@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b3323fcff2ceea4088cbfd34c6147a5, type: 3}
   m_Name: Tomato
   m_EditorClassIdentifier: 
+  creaturePrefab: {fileID: 393457275599381589, guid: eb25e192a952c6d4db635f3139696777,
+    type: 3}
   matureAge: 16
-  deathAge: 32
+  deathAge: 18

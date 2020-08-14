@@ -1,4 +1,6 @@
-﻿namespace Assets.Scripts.Player.Tools
+﻿using System;
+
+namespace Assets.Scripts.Player.Tools
 {
     /// <summary> The type/function of a tool. </summary>
     public enum ToolType

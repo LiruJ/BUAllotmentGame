@@ -18,6 +18,14 @@ namespace Assets.Scripts.Crops
         [Tooltip("The type of flooring required for this crop's roots, or empty if no specific floor type is required.")]
         [SerializeField]
         protected string requiredFloor = string.Empty;
+
+        [Tooltip("The icon used to represent this crop.")]
+        [SerializeField]
+        private Sprite icon = null;
+        #endregion
+
+        #region Properties
+        public Sprite Icon => icon;
         #endregion
 
         #region Initialisation Functions
