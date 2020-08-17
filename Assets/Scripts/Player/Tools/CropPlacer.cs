@@ -79,7 +79,8 @@ namespace Assets.Scripts.Player.Tools
                 TileIndicator.UpdateObjectGhost(cropTile.CanPlace(cropTilemap, tilePosition.x, tilePosition.z));
 
                 // If the player clicks and their mouse is not over the UI, place the currently selected tile.
-                if (Input.GetMouseButtonDown(0) && !eventSystem.IsPointerOverGameObject()) cropTilemap.PlantSeed(tilePosition.x, tilePosition.z, CurrentSeed);
+                if (Input.GetMouseButtonDown(0) && !eventSystem.IsPointerOverGameObject() && cropTilemap.PlantSeed(tilePosition.x, tilePosition.z, CurrentSeed)) 
+                    CurrentSeed = null;
             }
         }
         #endregion

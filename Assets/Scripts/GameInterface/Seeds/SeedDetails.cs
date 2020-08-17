@@ -13,6 +13,12 @@ namespace Assets.Scripts.GameInterface.Seeds
         private Text seedName = null;
 
         [SerializeField]
+        private Text seedGeneration = null;
+
+        [SerializeField]
+        private Text seedScore = null;
+
+        [SerializeField]
         private Image seedIcon = null;
 
         [SerializeField]
@@ -27,6 +33,8 @@ namespace Assets.Scripts.GameInterface.Seeds
         public void InitialiseFromSeed(CropTileset cropTileset, Seed seed)
         {
             seedName.text = seed.CropTileName;
+            seedGeneration.text = $"Generation: {seed.Generation}";
+            seedScore.text = seed.DistanceFromGoal == float.PositiveInfinity ? "Distance: N/A" : $"Distance: {seed.DistanceFromGoal}m";
             seedIcon.sprite = (cropTileset.GetTileFromName(seed.CropTileName) as CropTile).Icon;
         }
         #endregion

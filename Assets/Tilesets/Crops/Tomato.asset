@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creaturePrefab: {fileID: 393457275599381589, guid: eb25e192a952c6d4db635f3139696777,
     type: 3}
-  matureAge: 16
-  deathAge: 18
+  matureAge: 5
+  deathAge: 10

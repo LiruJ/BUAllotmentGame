@@ -9,15 +9,15 @@ namespace Assets.Scripts.Seeds
     public class SeedManager : MonoBehaviour
     {
         #region Inspector Fields
-        
+
         #endregion
 
         #region Fields
-        private readonly List<Seed> seeds = new List<Seed>();
+        private readonly Dictionary<uint, List<Seed>> seedsByGeneration = new Dictionary<uint, List<Seed>>();
         #endregion
 
         #region Properties
-        public IReadOnlyList<Seed> Seeds => seeds;
+        public IReadOnlyDictionary<uint, List<Seed>> SeedsByGeneration => seedsByGeneration;
         #endregion
 
         #region Events
@@ -26,12 +26,15 @@ namespace Assets.Scripts.Seeds
 
         [SerializeField]
         private seedEvent onSeedAdded = new seedEvent();
+
+        [SerializeField]
+        private seedEvent onSeedRemoved = new seedEvent();
         #endregion
 
         #region Initialisation Functions
         private void Start()
         {
-            AddSeed(new Seed("Tomato", new Dictionary<string, float>()));
+            AddSeed(new Seed(0, float.PositiveInfinity, "Tomato", new Dictionary<string, float>()));
         }
 
         private void Awake()
@@ -43,8 +46,24 @@ namespace Assets.Scripts.Seeds
         #region Seed Functions
         public void AddSeed(Seed seed)
         {
-            seeds.Add(seed);
+            // Get or create the list for the seed.
+            if (!seedsByGeneration.TryGetValue(seed.Generation, out List<Seed> generationSeeds))
+            {
+                generationSeeds = new List<Seed>(1);
+                seedsByGeneration.Add(seed.Generation, generationSeeds);
+            }
+
+            generationSeeds.Add(seed);
             onSeedAdded.Invoke(seed);
+        }
+
+        public void RemoveSeed(Seed seed)
+        {
+            // If the generation is 0 or has no list of seeds, do nothing.
+            if (seed.Generation == 0 || !seedsByGeneration.TryGetValue(seed.Generation, out List<Seed> generationSeeds)) return;
+
+            generationSeeds.Remove(seed);
+            onSeedRemoved.Invoke(seed);
         }
         #endregion
 

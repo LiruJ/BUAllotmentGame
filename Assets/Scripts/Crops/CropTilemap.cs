@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.BUCore.TileMap;
 using Assets.Scripts.Creatures;
 using Assets.Scripts.Seeds;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,12 +16,15 @@ namespace Assets.Scripts.Crops
 
         [SerializeField]
         private CreatureManager creatureManager = null;
+
+        [SerializeField]
+        private SeedManager seedManager = null;
         #endregion
 
         #region Fields
-        private Dictionary<ushort, Dictionary<string, float>> cropStatsByStatIndex = new Dictionary<ushort, Dictionary<string, float>>();
+        private readonly Dictionary<ushort, Seed> seedsByIndex = new Dictionary<ushort, Seed>();
 
-        private Queue<Tuple<ushort, Dictionary<string, float>>> unusedStats = new Queue<Tuple<ushort, Dictionary<string, float>>>();
+        private readonly Queue<ushort> unusedIndices = new Queue<ushort>();
 
         private ushort currentStatIndex = 1;
         #endregion
@@ -43,81 +45,69 @@ namespace Assets.Scripts.Crops
         #endregion
 
         #region Tile Functions
-        public void PlantSeed(int x, int y, Seed seed)
+        public bool PlantSeed(int x, int y, Seed seed)
         {
             // The tile and seed stats cannot be null when planting a seed, so log an error if this happens.
             if (seed == null || string.IsNullOrWhiteSpace(seed.CropTileName )|| seed.CropTileName == Tileset.EmptyTileName || seed.GeneticStats == null)
             {
                 Debug.LogError($"Invalid seed {seed}.", this);
-                return;
+                return false;
             }
 
             // Get the tile from the seed.
             Tile<CropTileData> cropTile = Tileset.GetTileFromName(seed.CropTileName);
 
-            // Go through the regular procedure of placing the tile.
-            SetTile(x, y, cropTile);
-
-            // As the tile cannot be empty or null, the tile should have stats after planting.
-            Dictionary<string, float> cropStats = getCropStats(x, y);
-            if (cropStats == null)
+            if (cropTile.CanPlace(this, x, y))
             {
-                Debug.LogError("Seeds were planted, but crop did not get stats.", this);
-                return;
-            }
+                // Go through the regular procedure of placing the tile.
+                SetTile(x, y, cropTile);
 
-            // Copy each seed stat over to the plant.
-            foreach (KeyValuePair<string, float> nameValuePair in seed.GeneticStats)
-                cropStats.Add(nameValuePair.Key, nameValuePair.Value);
+                // As the tile cannot be empty or null, the tile should have a seed after planting.
+                if (!seedsByIndex.TryGetValue(this[x, y].StatsIndex, out Seed cropSeed) || cropSeed != null)
+                {
+                    Debug.LogError($"Seed value was invalid: {cropSeed}", this);
+                    return false;
+                }
+
+                // Set the seed of the crop to the given seed.
+                seedsByIndex[this[x, y].StatsIndex] = seed;
+
+                // Remove the seed from the seed manager, as it's now in the ground.
+                seedManager.RemoveSeed(seed);
+
+                return true;
+            }
+            else return false;
         }
 
-        public IReadOnlyDictionary<string, float> GetCropStats(int x, int y) => getCropStats(x, y);
-
-        private Dictionary<string, float> getCropStats(int x, int y) => cropStatsByStatIndex.TryGetValue(this[x, y].StatsIndex, out Dictionary<string, float> cropStats) ? cropStats : null;
+        public Seed GetCropSeed(int x, int y) => seedsByIndex.TryGetValue(this[x, y].StatsIndex, out Seed seed) ? seed : null;
 
         protected override void setTileIndex(int x, int y, Tile<CropTileData> tile)
         {
-            // If the given tile is empty, reset the tile on the map and remove its stats.
+            // If the given tile is empty, reset the tile on the map and remove its seed.
             if (tile == null || tile.Name == Tileset.EmptyTileName)
             {
                 // If the index of the stats is 0, do nothing.
                 if (this[x, y].StatsIndex != 0)
                 {
-                    // Get the stats dictionary from the main dictionary, then remove it.
-                    Dictionary<string, float> cropStats = cropStatsByStatIndex[this[x, y].StatsIndex];
-                    cropStatsByStatIndex.Remove(this[x, y].StatsIndex);
+                    // Remove the seed.
+                    seedsByIndex.Remove(this[x, y].StatsIndex);
 
-                    // Clear the crop stats dictionary, then add it to the queue along with the ID.
-                    cropStats.Clear();
-                    unusedStats.Enqueue(new Tuple<ushort, Dictionary<string, float>>(this[x, y].StatsIndex, cropStats));
+                    // Add the index to the queue, as it's now unused.
+                    unusedIndices.Enqueue(this[x, y].StatsIndex);
 
                     // Reset the tile on the map.
                     this[x, y] = new CropTileData() { Index = 0, Age = 0, StatsIndex = 0 };
                 }
             }
-            // Otherwise; set the stats of the crop.
-            // TODO: Get stats from seed, set the stats of the plant to the stats of the seed.
+            // Otherwise; reserve the seed slot for this plant.
             else
             {
-                // The index and stats of the stat data.
-                ushort statsIndex;
-                Dictionary<string, float> cropStats;
+                // If the unused indices queue is empty, use a bigger index, otherwise; use an index from the queue.
+                ushort statsIndex = unusedIndices.Count == 0 ? currentStatIndex++ : unusedIndices.Dequeue();
 
-                // If the unused stats queue is empty, create a new dictionary.
-                if (unusedStats.Count == 0)
-                {
-                    // Create the new dictionary.
-                    cropStats = new Dictionary<string, float>();
-
-                    // Set the index of this new stat, then increment the current index.
-                    statsIndex = currentStatIndex;
-                    currentStatIndex++;
-                }
-                // Otherwise; reuse the old stat index and dictionary.
-                else (statsIndex, cropStats) = unusedStats.Dequeue();
-
-                // Add the data to the main dictionary.
-                cropStatsByStatIndex.Add(statsIndex, cropStats);
+                // Reserve the seed slot with a null value.
+                seedsByIndex.Add(statsIndex, null);
 
                 // Set the tile on the map.
                 this[x, y] = new CropTileData() { Index = Tileset.GetTileIndexFromName(tile.Name), Age = 0, StatsIndex = statsIndex };

@@ -33,13 +33,6 @@ namespace Assets.Scripts.Crops.Logic
             crop.Age++;
             tilemap[x, y] = crop;
 
-            // If the age is greater than or equal to the mature age, spawn a creature.
-            if (crop.Age >= matureAge)
-            {
-                CropTilemap cropTilemap = tilemap as CropTilemap;
-                cropTilemap.CreatureManager.SpawnCreature(creaturePrefab, x, y, cropTilemap.GetCropStats(x, y));
-            }
-
             // If the age is greater than or equal to the death age, unset the tile.
             if (crop.Age >= deathAge)
             {
@@ -49,6 +42,13 @@ namespace Assets.Scripts.Crops.Logic
             {
                 // Scale the plant.
                 scalePlant(tilemap, x, y, crop);
+
+                // If the age is greater than or equal to the mature age, spawn a creature.
+                if (crop.Age >= matureAge)
+                {
+                    CropTilemap cropTilemap = tilemap as CropTilemap;
+                    cropTilemap.CreatureManager.SpawnCreature(cropTilemap.GetCropSeed(x, y), creaturePrefab, x, y);
+                }
             }
         }
 

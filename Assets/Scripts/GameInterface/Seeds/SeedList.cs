@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Crops;
 using Assets.Scripts.Seeds;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -26,7 +27,7 @@ namespace Assets.Scripts.GameInterface.Seeds
         #endregion
 
         #region Fields
-
+        private readonly Dictionary<Seed, SeedDetails> seedDetailsBySeed = new Dictionary<Seed, SeedDetails>();
         #endregion
 
         #region Properties
@@ -60,7 +61,11 @@ namespace Assets.Scripts.GameInterface.Seeds
             SeedDetails seedDetails = seedDetailsPane.GetComponent<SeedDetails>();
             seedDetails.InitialiseFromSeed(cropTileset, seed);
             seedDetails.Button.onClick.AddListener(() => onSeedSelected.Invoke(seed));
+
+            seedDetailsBySeed.Add(seed, seedDetails);
         }
+
+        public void DeleteSeed(Seed seed) => seedDetailsBySeed.Remove(seed);
         #endregion
 
         #region Update Functions
