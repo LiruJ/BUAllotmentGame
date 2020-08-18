@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace Assets.Scripts.GameInterface.Seeds
 {
@@ -65,7 +64,15 @@ namespace Assets.Scripts.GameInterface.Seeds
             seedDetailsBySeed.Add(seed, seedDetails);
         }
 
-        public void DeleteSeed(Seed seed) => seedDetailsBySeed.Remove(seed);
+        public void DeleteSeed(Seed seed)
+        {
+            if (seedDetailsBySeed.TryGetValue(seed, out SeedDetails seedDetails))
+            {
+                seedDetails.Button.onClick.RemoveAllListeners();
+                Destroy(seedDetails.gameObject);
+                seedDetailsBySeed.Remove(seed);
+            }
+        }
         #endregion
 
         #region Update Functions
