@@ -7,10 +7,13 @@ using UnityEngine.Events;
 
 namespace Assets.Scripts.GameInterface.Seeds
 {
-    public class SeedList : MonoBehaviour
+    public class SeedList : MonoBehaviour, ISelectionBar<SeedDetails>
     {
         #region Inspector Fields
         [Header("Dependencies")]
+        [SerializeField]
+        private ModalWindowController modalWindowController = null;
+
         [SerializeField]
         private SeedManager seedManager = null;
 
@@ -26,65 +29,49 @@ namespace Assets.Scripts.GameInterface.Seeds
         #endregion
 
         #region Fields
-        private readonly Dictionary<Seed, SeedDetails> seedDetailsBySeed = new Dictionary<Seed, SeedDetails>();
-        #endregion
-
-        #region Properties
-
+        private readonly Dictionary<SeedGeneration, SeedDetails> seedDetailsBySeedGeneration = new Dictionary<SeedGeneration, SeedDetails>();
         #endregion
 
         #region Events
         [Serializable]
-        private class seedEvent : UnityEvent<Seed> { }
+        private class seedGenerationEvent : UnityEvent<SeedGeneration> { }
 
         [SerializeField]
-        private seedEvent onSeedSelected = new seedEvent();
-        #endregion
-
-        #region Initialisation Functions
-        private void Start()
-        {
-        }
-
-        private void Awake()
-        {
-
-        }
+        private seedGenerationEvent onSeedGenerationSelected = new seedGenerationEvent();
         #endregion
 
         #region List Functions
-        public void AddSeed(Seed seed)
+        public void SeedAdded(SeedGeneration seedGeneration)
         {
-            GameObject seedDetailsPane = Instantiate(seedDetailsPrefab.gameObject, contentPane);
-
-            SeedDetails seedDetails = seedDetailsPane.GetComponent<SeedDetails>();
-            seedDetails.InitialiseFromSeed(cropTileset, seed);
-            seedDetails.Button.onClick.AddListener(() => onSeedSelected.Invoke(seed));
-
-            seedDetailsBySeed.Add(seed, seedDetails);
+            // If the generation has no list entry, create one.
+            if (!seedDetailsBySeedGeneration.TryGetValue(seedGeneration, out SeedDetails seedDetails))
+            {
+                GameObject seedDetailsPane = Instantiate(seedDetailsPrefab.gameObject, contentPane);
+                seedDetails = seedDetailsPane.GetComponent<SeedDetails>();
+                seedDetails.InitialiseFromSeed(modalWindowController, this, cropTileset, seedGeneration);
+                seedDetailsBySeedGeneration.Add(seedGeneration, seedDetails);
+            }
+            // Otherwise; refresh the existing one.
+            else seedDetails.Refresh();
         }
 
-        public void DeleteSeed(Seed seed)
+        public void SeedRemoved(SeedGeneration seedGeneration)
         {
-            if (seedDetailsBySeed.TryGetValue(seed, out SeedDetails seedDetails))
+            // If the generation has a list entry, check to see if it needs to be destroyed.
+            if (seedDetailsBySeedGeneration.TryGetValue(seedGeneration, out SeedDetails seedDetails))
             {
-                seedDetails.Button.onClick.RemoveAllListeners();
-                Destroy(seedDetails.gameObject);
-                seedDetailsBySeed.Remove(seed);
+                // If the generation has no seeds, destroy the UI item.
+                if (seedGeneration.Count == 0)
+                {
+                    Destroy(seedDetails.gameObject);
+                    seedDetailsBySeedGeneration.Remove(seedGeneration);
+                }
+                // Otherwise, refresh it.
+                else seedDetails.Refresh();
             }
         }
-        #endregion
 
-        #region Update Functions
-        private void Update()
-        {
-
-        }
-
-        private void FixedUpdate()
-        {
-
-        }
+        public void OnButtonSelected(SeedDetails button) => onSeedGenerationSelected.Invoke(button.SeedGeneration);
         #endregion
     }
 }

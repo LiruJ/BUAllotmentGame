@@ -60,9 +60,6 @@ namespace Assets.Scripts.Creatures
             Seed seed = new Seed();
             creature.PopulateSeed(seed);
 
-            // The score of the seed is the distance from the creature to the goal.
-            seed.DistanceFromGoal = Vector3.Distance(creature.transform.position, goalObject.position);
-
             // Add the seed to the seed manager.
             seedManager.AddSeed(seed);
 

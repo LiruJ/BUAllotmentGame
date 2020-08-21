@@ -52,10 +52,6 @@ namespace Assets.Scripts.Creatures
         private float value;
         #endregion
 
-        #region Constructors
-
-        #endregion
-
         #region Stat Functions
         public void PopulateSeed(Seed seed) => seed.GeneticStats.Add(statName, Value);
 

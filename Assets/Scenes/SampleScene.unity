@@ -201,7 +201,7 @@ PrefabInstance:
     - target: {fileID: 2599846659342085723, guid: 7921ad688b944cd4ba7f53f8e8f579fd,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 28.800003
       objectReference: {fileID: 0}
     - target: {fileID: 2599846659342085723, guid: 7921ad688b944cd4ba7f53f8e8f579fd,
         type: 3}
@@ -246,7 +246,7 @@ PrefabInstance:
     - target: {fileID: 5912577765231351523, guid: 7921ad688b944cd4ba7f53f8e8f579fd,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7720806416388348395, guid: 7921ad688b944cd4ba7f53f8e8f579fd,
         type: 3}
@@ -513,16 +513,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee23015fd8252bb4880d9de612cf43de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  modalWindowController: {fileID: 1767125902}
   seedManager: {fileID: 1997165157}
   contentPane: {fileID: 1771424564}
   cropTileset: {fileID: 11400000, guid: 38870c7f1130519488ab8f885bc9e40b, type: 2}
   seedDetailsPrefab: {fileID: 6936020141645653953, guid: a3582310d9f29be4eae42969d6c5a7e0,
     type: 3}
-  onSeedSelected:
+  onSeedGenerationSelected:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1033624972}
-        m_MethodName: set_CurrentSeed
+        m_MethodName: set_CurrentSeedGeneration
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2290,7 +2291,7 @@ GameObject:
   - component: {fileID: 1395943322}
   - component: {fileID: 1395943321}
   m_Layer: 5
-  m_Name: SeedWindow
+  m_Name: SeedSelector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2473,6 +2474,7 @@ GameObject:
   - component: {fileID: 1767125900}
   - component: {fileID: 1767125899}
   - component: {fileID: 1767125898}
+  - component: {fileID: 1767125902}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2561,6 +2563,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1767125902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1767125897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8ce5897cd4b77349b8406ff6cedebbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1771424563
 GameObject:
   m_ObjectHideFlags: 0
@@ -3167,7 +3181,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 235793519}
-        m_MethodName: AddSeed
+        m_MethodName: SeedAdded
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3181,7 +3195,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 235793519}
-        m_MethodName: DeleteSeed
+        m_MethodName: SeedRemoved
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

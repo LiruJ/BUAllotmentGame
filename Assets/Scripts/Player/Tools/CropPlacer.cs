@@ -17,18 +17,18 @@ namespace Assets.Scripts.Player.Tools
 
         #region Fields
         /// <summary> The currently selected seed. </summary>
-        private Seed currentSeed;
+        private SeedGeneration currentSeedGeneration;
         #endregion
 
         #region Properties
         /// <summary> The currently selected seed. </summary>
-        public Seed CurrentSeed
+        public SeedGeneration CurrentSeedGeneration
         {
-            get => currentSeed;
+            get => currentSeedGeneration;
             set
             {
                 // Set the current tile.
-                currentSeed = value;
+                currentSeedGeneration = value;
 
                 // If the current tile exists, show the placement ghost, otherwise; hide it.
                 TileIndicator.ShowObjectGhost = value != null;
@@ -52,9 +52,9 @@ namespace Assets.Scripts.Player.Tools
             TileIndicator.ShowObjectGhost = true;
 
             // If a seed is selected, change the object ghost and grid indicators to match the newly selected object.
-            if (currentSeed != null)
+            if (currentSeedGeneration != null)
             {
-                Tile<CropTileData> cropTile = cropTilemap.Tileset.GetTileFromName(currentSeed.CropTileName);
+                Tile<CropTileData> cropTile = cropTilemap.Tileset.GetTileFromName(currentSeedGeneration.CropTileName);
                 if (cropTile.HasTileObject) TileIndicator.ObjectGhost = cropTile.TileObject;
             }
         }
@@ -70,17 +70,17 @@ namespace Assets.Scripts.Player.Tools
             TileIndicator.UpdatePosition(tilePosition);
 
             // Only handle input and indicate placement validity if a tile is currently being placed.
-            if (CurrentSeed != null)
+            if (CurrentSeedGeneration != null)
             {
                 // Get the tile of the seed's crop.
-                Tile<CropTileData> cropTile = cropTilemap.Tileset.GetTileFromName(currentSeed.CropTileName);
+                Tile<CropTileData> cropTile = cropTilemap.Tileset.GetTileFromName(currentSeedGeneration.CropTileName);
 
                 // Update the colour of the object ghost based on the validity of the current placement.
-                TileIndicator.UpdateObjectGhost(cropTile.CanPlace(cropTilemap, tilePosition.x, tilePosition.z));
+                TileIndicator.UpdateObjectGhost(currentSeedGeneration.Count > 0 && cropTile.CanPlace(cropTilemap, tilePosition.x, tilePosition.z));
 
                 // If the player clicks and their mouse is not over the UI, place the currently selected tile.
-                if (Input.GetMouseButtonDown(0) && !eventSystem.IsPointerOverGameObject() && cropTilemap.PlantSeed(tilePosition.x, tilePosition.z, CurrentSeed)) 
-                    CurrentSeed = null;
+                if (CurrentSeedGeneration.Count > 0 && Input.GetMouseButtonDown(0) && !eventSystem.IsPointerOverGameObject() && CurrentSeedGeneration.GetBestSeed() is Seed seed)
+                    cropTilemap.PlantSeed(tilePosition.x, tilePosition.z, seed);
             }
         }
         #endregion

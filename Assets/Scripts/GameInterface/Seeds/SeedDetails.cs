@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Crops;
+using Assets.Scripts.GameInterface.FilterWindow;
 using Assets.Scripts.Seeds;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,33 +11,50 @@ namespace Assets.Scripts.GameInterface.Seeds
         #region Inspector Fields
         [Header("Elements")]
         [SerializeField]
-        private Text seedName = null;
+        private Text seedGenerationLabel = null;
 
         [SerializeField]
-        private Text seedGeneration = null;
-
-        [SerializeField]
-        private Text seedScore = null;
+        private Text seedCount = null;
 
         [SerializeField]
         private Image seedIcon = null;
 
         [SerializeField]
-        private Button button = null;
+        private Button selectionButton = null;
+
+        [SerializeField]
+        private Button filterButton = null;
+
+        [Header("Prefabs")]
+        [SerializeField]
+        private FilterWindowController filterWindowPrefab = null;
         #endregion
 
         #region Properties
-        public Button Button => button;
+        public SeedGeneration SeedGeneration { get; private set; }
         #endregion
 
         #region Initialisation Functions
-        public void InitialiseFromSeed(CropTileset cropTileset, Seed seed)
+        public void InitialiseFromSeed(ModalWindowController modalWindowController, ISelectionBar<SeedDetails> selectionBar, CropTileset cropTileset, SeedGeneration seedGeneration)
         {
-            seedName.text = seed.CropTileName;
-            seedGeneration.text = $"Generation: {seed.Generation}";
-            seedScore.text = seed.DistanceFromGoal == float.PositiveInfinity ? "Distance: N/A" : $"Distance: {seed.DistanceFromGoal}m";
-            seedIcon.sprite = (cropTileset.GetTileFromName(seed.CropTileName) as CropTile).Icon;
+            SeedGeneration = seedGeneration;
+
+            // Bind the main button to select this generation.
+            selectionButton.onClick.AddListener(() => selectionBar.OnButtonSelected(this));
+
+            // Bind the filter button to create a new filter window.
+            filterButton.onClick.AddListener(() => 
+            {
+                FilterWindowController filterWindowController = modalWindowController.CreateModalWindow<FilterWindowController>(filterWindowPrefab.gameObject);
+                filterWindowController.CreateFrom(SeedGeneration);
+            });
+
+            seedCount.text = $"x{seedGeneration.Count}";
+            seedGenerationLabel.text = $"Generation: {seedGeneration.Generation}";
+            seedIcon.sprite = (cropTileset.GetTileFromName(seedGeneration.CropTileName) as CropTile).Icon;
         }
+
+        public void Refresh() => seedCount.text = $"x{SeedGeneration.Count}";
         #endregion
     }
 }

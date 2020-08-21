@@ -8,7 +8,9 @@ namespace Assets.Scripts.Creatures
     public class Creature : MonoBehaviour
     {
         #region Inspector Fields
-
+        [Range(1, 200)]
+        [SerializeField]
+        private float health = 1;
         #endregion
 
         #region Fields
@@ -18,7 +20,9 @@ namespace Assets.Scripts.Creatures
         private CreatureManager creatureManager = null;
 
         private bool isAlive;
-        private float health;
+
+
+        private float aliveTime = 0;
 
         private readonly List<ICreatureBehaviour> creatureBehaviours = new List<ICreatureBehaviour>();
         #endregion
@@ -54,7 +58,7 @@ namespace Assets.Scripts.Creatures
         public Transform GoalObject { get; private set; }
         #endregion
 
-        #region Initialisation Functions
+        #region Stat Functions
         private void findBehaviours() => creatureBehaviours.AddRange(GetComponents<ICreatureBehaviour>());
 
         public void PopulateSeed(Seed seed)
@@ -66,6 +70,9 @@ namespace Assets.Scripts.Creatures
             // Set the stats of the seed.
             foreach (ICreatureBehaviour creatureBehaviour in creatureBehaviours)
                 creatureBehaviour.PopulateSeed(seed);
+
+            // Calculate the generic lifetime stats of this creature.
+            populateLifetimeStats(seed);
         }
 
         public void InitialiseFromStats(CreatureManager creatureManager, Seed seed, Transform goalObject)
@@ -75,7 +82,6 @@ namespace Assets.Scripts.Creatures
             GoalObject = goalObject;
 
             isAlive = true;
-            Health = 100;
 
             // Add the behaviours.
             findBehaviours();
@@ -84,17 +90,18 @@ namespace Assets.Scripts.Creatures
             foreach (ICreatureBehaviour creatureBehaviour in creatureBehaviours)
                 creatureBehaviour.InitialiseFromStats(this, seed.GeneticStats);
         }
+
+        private void populateLifetimeStats(Seed seed)
+        {
+            // Add each generic lifetime stat to the seed.
+            seed.LifetimeStats.Add("AliveTime", aliveTime);
+        }
         #endregion
 
         #region Update Functions
-        private void Update()
-        {
-
-        }
-
         private void FixedUpdate()
         {
-
+            if (IsAlive) aliveTime += Time.fixedDeltaTime;
         }
         #endregion
     }

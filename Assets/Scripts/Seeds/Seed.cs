@@ -7,29 +7,38 @@ namespace Assets.Scripts.Seeds
     [Serializable]
     public class Seed
     {
-        #region Inspector Fields
-
-        #endregion
-
         #region Properties
-        public uint Generation { get; set; }
+        public uint Generation { get; set; } = 0;
 
-        public string CropTileName { get; set; }
+        public string CropTileName { get; set; } = string.Empty;
 
-        public Dictionary<string, float> GeneticStats { get; }
+        public Dictionary<string, float> GeneticStats { get; } = new Dictionary<string, float>();
 
-        public float DistanceFromGoal { get; set; }
+        public Dictionary<string, float> LifetimeStats { get; } = new Dictionary<string, float>();
         #endregion
 
         #region Constructors
-        public Seed() : this(0, float.PositiveInfinity, string.Empty, new Dictionary<string, float>()) { }
+        public Seed() { }
 
-        public Seed(uint generation, float distance, string cropTileName, Dictionary<string, float> geneticStats)
+        public Seed(uint generation, string cropTileName)
         {
             Generation = generation;
-            DistanceFromGoal = distance;
             CropTileName = cropTileName ?? throw new ArgumentNullException(nameof(cropTileName));
-            GeneticStats = geneticStats ?? throw new ArgumentNullException(nameof(geneticStats));
+        }
+        #endregion
+
+        #region Score Functions
+        public float CalculateScore(IReadOnlyDictionary<string, float> scoreFilter)
+        {
+            float score = 0;
+
+            foreach (KeyValuePair<string, float> nameMultiplierPair in scoreFilter)
+            {
+                // If the lifetime stats contains the current stat, add it to the score with the multiplier.
+                if (LifetimeStats.TryGetValue(nameMultiplierPair.Key, out float stat)) score += stat * nameMultiplierPair.Value;
+            }
+
+            return score;
         }
         #endregion
     }

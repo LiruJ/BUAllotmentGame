@@ -27,11 +27,13 @@ namespace Assets.Scripts.Creatures
 
         #endregion
 
-        #region Initialisation Functions
+        #region Stat Functions
         public void PopulateSeed(Seed seed)
         {
             foreach (CreatureStat creatureStat in creatureStats)
                 creatureStat.PopulateSeed(seed);
+
+            populateLifetimeStats(seed);
         }
 
         public void InitialiseFromStats(Creature creature, IReadOnlyDictionary<string, float> stats)
@@ -42,6 +44,12 @@ namespace Assets.Scripts.Creatures
                 creatureStat.InitialiseFromStats(stats);
 
             navMeshAgent.SetDestination(creature.GoalObject.position);
+        }
+
+        private void populateLifetimeStats(Seed seed)
+        {
+            // Add each stat of this behaviour to the lifetime stats of the seed.
+            seed.LifetimeStats.Add("DistanceFromGoal", Vector3.Distance(transform.position, creature.GoalObject.position));
         }
         #endregion
 

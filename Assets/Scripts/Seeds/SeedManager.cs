@@ -13,28 +13,28 @@ namespace Assets.Scripts.Seeds
         #endregion
 
         #region Fields
-        private readonly Dictionary<uint, List<Seed>> seedsByGeneration = new Dictionary<uint, List<Seed>>();
+        private readonly Dictionary<string, SeedGeneration> seedGenerations = new Dictionary<string, SeedGeneration>();
         #endregion
 
         #region Properties
-        public IReadOnlyDictionary<uint, List<Seed>> SeedsByGeneration => seedsByGeneration;
+        public IReadOnlyDictionary<string, SeedGeneration> SeedsByGeneration => seedGenerations;
         #endregion
 
         #region Events
         [Serializable]
-        private class seedEvent : UnityEvent<Seed> { }
+        private class seedGenerationEvent : UnityEvent<SeedGeneration> { }
 
         [SerializeField]
-        private seedEvent onSeedAdded = new seedEvent();
+        private seedGenerationEvent onSeedAdded = new seedGenerationEvent();
 
         [SerializeField]
-        private seedEvent onSeedRemoved = new seedEvent();
+        private seedGenerationEvent onSeedRemoved = new seedGenerationEvent();
         #endregion
 
         #region Initialisation Functions
         private void Start()
         {
-            AddSeed(new Seed(0, float.PositiveInfinity, "Tomato", new Dictionary<string, float>()));
+            AddSeed(new Seed(0, "Tomato"));
         }
 
         private void Awake()
@@ -47,35 +47,27 @@ namespace Assets.Scripts.Seeds
         public void AddSeed(Seed seed)
         {
             // Get or create the list for the seed.
-            if (!seedsByGeneration.TryGetValue(seed.Generation, out List<Seed> generationSeeds))
+            if (!seedGenerations.TryGetValue(SeedGeneration.CalculateUniqueIdentifier(seed), out SeedGeneration seedGeneration))
             {
-                generationSeeds = new List<Seed>(1);
-                seedsByGeneration.Add(seed.Generation, generationSeeds);
+                seedGeneration = new SeedGeneration(seed.CropTileName, seed.Generation);
+                seedGenerations.Add(seedGeneration.UniqueIdentifier, seedGeneration);
             }
 
-            generationSeeds.Add(seed);
-            onSeedAdded.Invoke(seed);
+            seedGeneration.Add(seed);
+            onSeedAdded.Invoke(seedGeneration);
         }
 
         public void RemoveSeed(Seed seed)
         {
             // If the generation is 0 or has no list of seeds, do nothing.
-            if (seed.Generation == 0 || !seedsByGeneration.TryGetValue(seed.Generation, out List<Seed> generationSeeds)) return;
+            if (seed.Generation == 0 || !seedGenerations.TryGetValue(SeedGeneration.CalculateUniqueIdentifier(seed), out SeedGeneration seedGeneration)) return;
+            
+            seedGeneration.Remove(seed);
 
-            generationSeeds.Remove(seed);
-            onSeedRemoved.Invoke(seed);
-        }
-        #endregion
+            // If the entire generation is now empty, remove it.
+            if (seedGeneration.Count == 0) seedGenerations.Remove(seedGeneration.UniqueIdentifier);
 
-        #region Update Functions
-        private void Update()
-        {
-
-        }
-
-        private void FixedUpdate()
-        {
-
+            onSeedRemoved.Invoke(seedGeneration);
         }
         #endregion
     }
