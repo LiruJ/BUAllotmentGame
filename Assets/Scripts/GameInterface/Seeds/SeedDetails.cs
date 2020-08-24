@@ -46,12 +46,14 @@ namespace Assets.Scripts.GameInterface.Seeds
             filterButton.onClick.AddListener(() => 
             {
                 FilterWindowController filterWindowController = modalWindowController.CreateModalWindow<FilterWindowController>(filterWindowPrefab.gameObject);
-                filterWindowController.CreateFrom(SeedGeneration);
+                filterWindowController.CreateFrom(modalWindowController, SeedGeneration);
             });
 
             seedCount.text = $"x{seedGeneration.Count}";
             seedGenerationLabel.text = $"Generation: {seedGeneration.Generation}";
             seedIcon.sprite = (cropTileset.GetTileFromName(seedGeneration.CropTileName) as CropTile).Icon;
+
+            if (SeedGeneration.Generation == 0) filterButton.gameObject.SetActive(false);
         }
 
         public void Refresh() => seedCount.text = $"x{SeedGeneration.Count}";

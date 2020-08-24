@@ -9,13 +9,10 @@ namespace Assets.Scripts.GameInterface.FilterWindow
         #region Inspector Fields
         [Header("Elements")]
         [SerializeField]
-        private Toggle toggle = null;
-
-        [SerializeField]
         private Text statNameText = null;
 
         [SerializeField]
-        private Text statValueLabel = null;
+        private InputField statValueLabel = null;
 
         [SerializeField]
         private Slider weightSlider = null;
@@ -26,26 +23,38 @@ namespace Assets.Scripts.GameInterface.FilterWindow
         #endregion
 
         #region Initialisation Functions
-        public void CreateFrom(ToggleGroup toggleGroup, string statName, Dictionary<string, float> scoreFilter)
+        public void CreateFrom(string statName, FilterWindowController filterWindow)
         {
-            // Set the toggle group of the toggle button.
-            toggle.group = toggleGroup;
-
             // Set the stat name.
             StatName = statName;
 
-            // If the score filter does not have this stat, initialise it to 0.
-            if (!scoreFilter.TryGetValue(statName, out float weightValue))
+            // Set the stat name label.
+            statNameText.text = statName;
+
+            // If the score filter does not have this stat, log an error.
+            if (!filterWindow.SeedGeneration.ScoreFilter.TryGetValue(statName, out float weightValue))
             {
-                weightValue = 0;
-                scoreFilter.Add(statName, weightValue);
+                Debug.LogError($"Score filter dictionary was missing {statName} stat.");
+                return;
             }
 
             // Set the value of the slider to the value of the weight.
             weightSlider.value = weightValue;
 
             // Bind the slider changing to change the weight value.
-            weightSlider.onValueChanged.AddListener((newValue) => scoreFilter[statName] = newValue);
+            weightSlider.onValueChanged.AddListener((newValue) =>
+            {
+                filterWindow.SeedGeneration.ScoreFilter[statName] = newValue;
+                statValueLabel.text = newValue.ToString();
+            });
+
+            // Bind the text input field's end edit event to change the slider, which then changes the filter value.
+            statValueLabel.text = weightValue.ToString();
+            statValueLabel.onEndEdit.AddListener((stringValue) =>
+            {
+                if (float.TryParse(stringValue, out float newWeight)) weightSlider.value = newWeight;
+            });
+
         }
         #endregion
     }

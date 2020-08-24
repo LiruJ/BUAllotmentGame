@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Assets.Scripts.BUCore.UI;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Assets.Scripts.GameInterface.FilterWindow
 {
@@ -13,25 +11,25 @@ namespace Assets.Scripts.GameInterface.FilterWindow
         private RectTransform contentObject = null;
 
         [SerializeField]
-        private ToggleGroup toggleGroup = null;
+        private MultiSelectorGroup multiSelectorGroup = null;
+
+        [SerializeField]
+        private FilterWindowController filterWindow = null;
 
         [Header("Prefabs")]
         [SerializeField]
         private StatValueAdjuster statValueListItem = null;
         #endregion
 
-        #region Fields
-        private Dictionary<string, float> scoreFilter = null;
+        #region Properties
+        public MultiSelectorGroup MultiSelectorGroup => multiSelectorGroup;
         #endregion
 
         #region List Functions
-        public void Populate(Dictionary<string, float> scoreFilter)
+        public void Populate()
         {
-            // Set the score filter.
-            this.scoreFilter = scoreFilter;
-
             // Go over each stat in the filter and add it as a UI item to the list.
-            foreach (string statName in scoreFilter.Keys)
+            foreach (string statName in filterWindow.SeedGeneration.ScoreFilter.Keys)
                 AddStatValueItem(statName);
         }
 
@@ -41,8 +39,10 @@ namespace Assets.Scripts.GameInterface.FilterWindow
             GameObject itemObject = Instantiate(statValueListItem.gameObject, contentObject);
 
             // Get the stat value list item component from the item.
-            itemObject.GetComponent<StatValueAdjuster>().CreateFrom(toggleGroup, statName, scoreFilter);
+            itemObject.GetComponent<StatValueAdjuster>().CreateFrom(statName, filterWindow);
         }
+
+        public void RemoveStatValueItem(StatValueAdjuster statValue) => Destroy(statValue.gameObject);
         #endregion
     }
 }

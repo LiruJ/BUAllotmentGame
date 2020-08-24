@@ -1,7 +1,7 @@
-﻿using Assets.Scripts.Seeds;
+﻿using Assets.Scripts.BUCore.UI;
+using Assets.Scripts.Seeds;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Assets.Scripts.GameInterface.FilterWindow
 {
@@ -13,21 +13,28 @@ namespace Assets.Scripts.GameInterface.FilterWindow
         private RectTransform contentObject = null;
 
         [SerializeField]
-        private ToggleGroup toggleGroup = null;
+        private MultiSelectorGroup multiSelectorGroup = null;
+
+        [SerializeField]
+        private FilterWindowController filterWindow = null;
 
         [Header("Prefabs")]
         [SerializeField]
         private AvailableStatItem statListItem = null;
         #endregion
 
+        #region Properties
+        public MultiSelectorGroup MultiSelectorGroup => multiSelectorGroup;
+        #endregion
+
         #region List Functions
-        public void Populate(IReadOnlyList<Seed> seeds)
+        public void Populate()
         {
             // Create a hashset to hold each unique stat of the seed generation.
             HashSet<string> uniqueStats = new HashSet<string>();
 
             // Go over each seed in the generation, adding each stat to the hash set.
-            foreach (Seed seed in seeds)
+            foreach (Seed seed in filterWindow.SeedGeneration.UnsortedSeeds)
                 foreach (string statKey in seed.LifetimeStats.Keys)
                     if (!uniqueStats.Contains(statKey)) uniqueStats.Add(statKey);
 
@@ -42,8 +49,10 @@ namespace Assets.Scripts.GameInterface.FilterWindow
             GameObject statButton = Instantiate(statListItem.gameObject, contentObject);
 
             // Get the stat item component of the button and initialise it.
-            statButton.GetComponent<AvailableStatItem>().CreateFrom(toggleGroup, statName);
+            statButton.GetComponent<AvailableStatItem>().CreateFrom(statName);
         }
+
+        public void RemoveStatItem(AvailableStatItem statItem) => Destroy(statItem.gameObject);
         #endregion
     }
 }

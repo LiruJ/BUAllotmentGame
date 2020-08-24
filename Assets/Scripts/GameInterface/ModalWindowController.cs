@@ -15,17 +15,31 @@ namespace Assets.Scripts.GameInterface
             // If there's currently a modal window, do nothing.
             if (CurrentModalWindow != null) return null;
 
+            // Deactivate everything before the window is created.
+            for (int i = 0; i < transform.childCount; i++)
+                transform.GetChild(i).gameObject.SetActive(false);
+
             // Create an instance of the prefab.
             GameObject window = Instantiate(prefab, transform);
 
             // Set the current modal to the created window.
             CurrentModalWindow = window;
 
-            // Deactivate everything other than the window.
-            
-
             // Return the found component.
             return window.GetComponent<T>();
+        }
+
+        public void DestroyCurrentModalWindow()
+        {
+            // If there is no current modal window, do nothing.
+            if (CurrentModalWindow == null) return;
+
+            // Destroy the current window.
+            Destroy(CurrentModalWindow);
+
+            // Activate everything.
+            for (int i = 0; i < transform.childCount; i++)
+                transform.GetChild(i).gameObject.SetActive(true);
         }
         #endregion
     }

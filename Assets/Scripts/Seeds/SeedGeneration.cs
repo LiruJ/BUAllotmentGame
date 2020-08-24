@@ -41,7 +41,7 @@ namespace Assets.Scripts.Seeds
             if (needsSorting) Sort();
 
             // Return the best seed, or null if none exist.
-            return Count > 0 ? seeds[0] : null;
+            return Count > 0 ? seeds[seeds.Count - 1] : null;
         }
 
         public void Add(Seed seed)

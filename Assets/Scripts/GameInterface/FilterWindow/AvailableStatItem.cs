@@ -8,9 +8,6 @@ namespace Assets.Scripts.GameInterface.FilterWindow
         #region Inspector Fields
         [Header("Elements")]
         [SerializeField]
-        private Toggle toggle = null;
-
-        [SerializeField]
         private Text text = null;
         #endregion
 
@@ -19,9 +16,8 @@ namespace Assets.Scripts.GameInterface.FilterWindow
         #endregion
 
         #region Initialisation Functions
-        public void CreateFrom(ToggleGroup toggleGroup, string statName)
+        public void CreateFrom(string statName)
         {
-            toggle.group = toggleGroup;
             text.text = statName;
             StatName = statName;
         }
