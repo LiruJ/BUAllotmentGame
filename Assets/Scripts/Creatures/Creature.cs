@@ -61,20 +61,6 @@ namespace Assets.Scripts.Creatures
         #region Stat Functions
         private void findBehaviours() => creatureBehaviours.AddRange(GetComponents<ICreatureBehaviour>());
 
-        public void PopulateSeed(Seed seed)
-        {
-            // Set the plant type and generation of the seed.
-            seed.CropTileName = this.seed.CropTileName;
-            seed.Generation = this.seed.Generation + 1;
-
-            // Set the stats of the seed.
-            foreach (ICreatureBehaviour creatureBehaviour in creatureBehaviours)
-                creatureBehaviour.PopulateSeed(seed);
-
-            // Calculate the generic lifetime stats of this creature.
-            populateLifetimeStats(seed);
-        }
-
         public void InitialiseFromStats(CreatureManager creatureManager, Seed seed, Transform goalObject)
         {
             this.creatureManager = creatureManager;
@@ -90,11 +76,29 @@ namespace Assets.Scripts.Creatures
             foreach (ICreatureBehaviour creatureBehaviour in creatureBehaviours)
                 creatureBehaviour.InitialiseFromStats(this, seed.GeneticStats);
         }
+        #endregion
 
-        private void populateLifetimeStats(Seed seed)
+        #region Seed Dropping Functions
+        public Seed DropSeed()
+        {
+            // Create a new seed using the stats from this creature's seed.
+            Seed droppedSeed = new Seed(seed.Generation + 1, seed.CropTileName);
+
+            // Give each behaviour a chance to set the genetic and lifetime stats of the dropped seed.
+            foreach (ICreatureBehaviour creatureBehaviour in creatureBehaviours)
+                creatureBehaviour.PopulateSeed(droppedSeed);
+
+            // Calculate the generic lifetime stats of this creature.
+            populateLifetimeStats(droppedSeed);
+
+            // Return the dropped seed.
+            return droppedSeed;
+        }
+
+        private void populateLifetimeStats(Seed droppedSeed)
         {
             // Add each generic lifetime stat to the seed.
-            seed.LifetimeStats.Add("AliveTime", aliveTime);
+            droppedSeed.LifetimeStats.Add("AliveTime", aliveTime);
         }
         #endregion
 

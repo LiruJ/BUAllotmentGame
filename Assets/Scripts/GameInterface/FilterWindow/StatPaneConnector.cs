@@ -1,8 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.GameInterface.FilterWindow
 {
+    /// <summary> The controller that allows stats to be added to or removed from the score filter through the use of toggles and buttons. </summary>
     public class StatPaneConnector : MonoBehaviour
     {
         #region Inspector Fields
@@ -15,11 +15,13 @@ namespace Assets.Scripts.GameInterface.FilterWindow
         [SerializeField]
         private StatValuePane statValuePane = null;
 
+        [Tooltip("The main window.")]
         [SerializeField]
         private FilterWindowController filterWindow = null;
         #endregion
 
         #region Button Functions
+        /// <summary> Takes all currently selected available stats and adds them to the score filter with a value of 0. </summary>
         public void AssignSelectedAvailableStats()
         {
             // Go over each selected item in the available stats pane.
@@ -39,6 +41,7 @@ namespace Assets.Scripts.GameInterface.FilterWindow
             } 
         }
 
+        /// <summary> Takes all currently selected score filter stats and removes them from the score filter. </summary>
         public void RemoveSelectedValueStats()
         {
             // Go over each selected item in the value pane.
@@ -56,18 +59,6 @@ namespace Assets.Scripts.GameInterface.FilterWindow
                 // Add the item to the available stats pane.
                 availableStatsPane.AddStatItem(statName);
             }
-        }
-        #endregion
-
-        #region Update Functions
-        private void Update()
-        {
-
-        }
-
-        private void FixedUpdate()
-        {
-
         }
         #endregion
     }

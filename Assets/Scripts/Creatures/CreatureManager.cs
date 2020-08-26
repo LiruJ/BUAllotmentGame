@@ -1,42 +1,25 @@
 ﻿using Assets.Scripts.Crops;
 using Assets.Scripts.Seeds;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Creatures
 {
+    /// <summary> Manages spawning and destroying creatures for a player. </summary>
     public class CreatureManager : MonoBehaviour
     {
         #region Inspector Fields
         [Header("Dependencies")]
+        [Tooltip("The crop tilemap of the player.")]
         [SerializeField]
         private CropTilemap cropTilemap = null;
 
+        [Tooltip("The seed manager of the player.")]
         [SerializeField]
         private SeedManager seedManager = null;
 
+        [Tooltip("The endpoint that all creatures belonging to this player which to reach.")]
         [SerializeField]
         private Transform goalObject = null;
-        #endregion
-
-        #region Fields
-
-        #endregion
-
-        #region Properties
-
-        #endregion
-
-        #region Initialisation Functions
-        private void Start()
-        {
-
-        }
-
-        private void Awake()
-        {
-
-        }
         #endregion
 
         #region Creature Functions
@@ -48,35 +31,23 @@ namespace Assets.Scripts.Creatures
             // Get the creature script of the instance.
             Creature creatureScript = creatureInstance.GetComponent<Creature>();
 
+            // Position the creature in the middle of the plant tile.
             creatureInstance.transform.position = cropTilemap.Grid.CellToWorld(new Vector3Int(plantX, 0, plantY)) + new Vector3(0.5f, 0, 0.5f);
 
-            // Intitialise the stats of the creature based on the given stats.
+            // Intitialise the stats of the creature based on the given seed.
             creatureScript.InitialiseFromStats(this, seed, goalObject);
         }
 
         public void CreatureDied(Creature creature)
         {
-            // Create a new seed and populate it from the creature.
-            Seed seed = new Seed();
-            creature.PopulateSeed(seed);
+            // Get the dropped seed from the creature.
+            Seed seed = creature.DropSeed();
 
             // Add the seed to the seed manager.
             seedManager.AddSeed(seed);
 
             // Destroy the creature.
             Destroy(creature.gameObject);
-        }
-        #endregion
-
-        #region Update Functions
-        private void Update()
-        {
-
-        }
-
-        private void FixedUpdate()
-        {
-
         }
         #endregion
     }

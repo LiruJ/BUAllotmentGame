@@ -16,29 +16,32 @@ namespace Assets.Scripts.Player.Tools
         #endregion
 
         #region Fields
-        /// <summary> The currently selected seed. </summary>
+        /// <summary> The currently selected seed generation. </summary>
         private SeedGeneration currentSeedGeneration;
         #endregion
 
         #region Properties
-        /// <summary> The currently selected seed. </summary>
+        /// <summary> The currently selected seed generation. </summary>
         public SeedGeneration CurrentSeedGeneration
         {
             get => currentSeedGeneration;
             set
             {
-                // Set the current tile.
+                // Set the current seed generation.
                 currentSeedGeneration = value;
 
                 // If the current tile exists, show the placement ghost, otherwise; hide it.
                 TileIndicator.ShowObjectGhost = value != null;
 
                 // If the ghost is to be shown, switch out the model.
-                // Note: This will break if the crop has no tile object, which shouldn't happen.
                 if (TileIndicator.ShowObjectGhost)
                 {
+                    // Get the tile data for the crop tile.
                     Tile<CropTileData> cropTile = cropTilemap.Tileset.GetTileFromName(value.CropTileName);
-                    TileIndicator.ObjectGhost = cropTile.TileObject;
+
+                    // If the tile has an associated object, set the ghost's object to it. Otherwise; hide the ghost.
+                    if (cropTile.HasTileObject) TileIndicator.ObjectGhost = cropTile.TileObject;
+                    else TileIndicator.ShowObjectGhost = false;
                 }
             }
         }

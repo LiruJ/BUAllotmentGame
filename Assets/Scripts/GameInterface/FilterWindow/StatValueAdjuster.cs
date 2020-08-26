@@ -1,28 +1,35 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.GameInterface.FilterWindow
 {
+    /// <summary> The controller class for the stats used in a filter, controlling the weight value with a slider. </summary>
     public class StatValueAdjuster : MonoBehaviour
     {
         #region Inspector Fields
         [Header("Elements")]
+        [Tooltip("The text box that shows the name of the stat.")]
         [SerializeField]
         private Text statNameText = null;
 
+        [Tooltip("The field which displays the current weight value, and allows for changes to be manually input.")]
         [SerializeField]
         private InputField statValueLabel = null;
 
+        [Tooltip("The slider which allows changes to be made to the weight value.")]
         [SerializeField]
         private Slider weightSlider = null;
         #endregion
 
         #region Properties
+        /// <summary> The name of the stat that this controller changes. </summary>
         public string StatName { get; private set; }
         #endregion
 
         #region Initialisation Functions
+        /// <summary> Initialises this stat item adjuster, adjusting the stat with the given <paramref name="statName"/> and using the given <paramref name="filterWindow"/> to access the required seed data. </summary>
+        /// <param name="statName"> The name of the stat to be adjusted. </param>
+        /// <param name="filterWindow"> The containing filter window. </param>
         public void CreateFrom(string statName, FilterWindowController filterWindow)
         {
             // Set the stat name.
@@ -54,7 +61,6 @@ namespace Assets.Scripts.GameInterface.FilterWindow
             {
                 if (float.TryParse(stringValue, out float newWeight)) weightSlider.value = newWeight;
             });
-
         }
         #endregion
     }

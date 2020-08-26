@@ -2,14 +2,20 @@
 
 namespace Assets.Scripts.GameInterface
 {
+    /// <summary> Handles keeping a modal window active. </summary>
     [DisallowMultipleComponent]
     public class ModalWindowController : MonoBehaviour
     {
         #region Properties
+        /// <summary> The currently active modal window, or null if none exists. </summary>
         public GameObject CurrentModalWindow { get; private set; }
         #endregion
 
         #region Window Functions
+        /// <summary> Creates an instance of the given <paramref name="prefab"/>, deactivates every other UI element, and returns the component of type <typeparamref name="T"/> found from the instance. </summary>
+        /// <typeparam name="T"> The type of <see cref="Component"/> to return. </typeparam>
+        /// <param name="prefab"> The UI element to create an instance of. </param>
+        /// <returns> The <see cref="Component"/> of type <typeparamref name="T"/> obtained from the created instance. </returns>
         public T CreateModalWindow<T>(GameObject prefab) where T : Component
         {
             // If there's currently a modal window, do nothing.
@@ -28,7 +34,8 @@ namespace Assets.Scripts.GameInterface
             // Return the found component.
             return window.GetComponent<T>();
         }
-
+        
+        /// <summary> Destroy and unset the current modal window. </summary>
         public void DestroyCurrentModalWindow()
         {
             // If there is no current modal window, do nothing.
