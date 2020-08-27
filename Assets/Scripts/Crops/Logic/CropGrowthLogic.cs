@@ -10,6 +10,7 @@ namespace Assets.Scripts.Crops.Logic
     {
         #region Inspector Fields
         [Header("Prefabs")]
+        [Tooltip("The prefab of the creature to spawn.")]
         [SerializeField]
         private Creature creaturePrefab = null;
 
