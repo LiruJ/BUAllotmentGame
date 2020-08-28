@@ -27,6 +27,9 @@ namespace Assets.Scripts.Creatures
         [Tooltip("The max/min amount added to or removed from the stat value when mutated.")]
         [SerializeField]
         private float mutationStrength = 0.1f;
+
+        [SerializeField]
+        private List<StatSideEffect> sideEffects = new List<StatSideEffect>();
         #endregion
 
         #region Fields
@@ -41,10 +44,20 @@ namespace Assets.Scripts.Creatures
             get => value;
             private set
             {
+                // Save the old value and set the new value.
                 float oldValue = this.value;
                 this.value = value;
 
-                if (oldValue != value) onValueChanged.Invoke(this.value);
+                // If the value changed, invoke the event.
+                if (oldValue != value)
+                {
+                    // Invoke the main event first.
+                    onValueChanged.Invoke(this.value);
+
+                    // Invoke all side effect events.
+                    foreach (StatSideEffect sideEffect in sideEffects)
+                        sideEffect.Invoke(this.value);
+                }
             }
         }
         #endregion

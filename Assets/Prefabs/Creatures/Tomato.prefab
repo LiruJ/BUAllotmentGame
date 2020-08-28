@@ -206,7 +206,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1be8038cfd9f1243a26340365e16e39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 20
+  healthStat:
+    statName: MaxHealth
+    mutationChance: 0.05
+    mutationStrength: 10
+    sideEffects:
+    - name: Mass
+      multiplier: 0.1
+      minimum: 0
+      onValueChanged:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 6558852052695232240}
+            m_MethodName: set_mass
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+      onValueChangedVector:
+        m_PersistentCalls:
+          m_Calls: []
+    - name: Size
+      multiplier: 0.05
+      minimum: 0.1
+      onValueChanged:
+        m_PersistentCalls:
+          m_Calls: []
+      onValueChangedVector:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 2531037247308440413}
+            m_MethodName: set_localScale
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 393457275599381589}
+          m_MethodName: set_Health
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &-5138389700123578108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,6 +282,27 @@ MonoBehaviour:
   - statName: MaxSpeed
     mutationChance: 0.1
     mutationStrength: 1
+    sideEffects:
+    - name: Drag
+      multiplier: 2
+      minimum: 0
+      onValueChanged:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 6558852052695232240}
+            m_MethodName: set_drag
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+      onValueChangedVector:
+        m_PersistentCalls:
+          m_Calls: []
     onValueChanged:
       m_PersistentCalls:
         m_Calls:
@@ -241,6 +320,27 @@ MonoBehaviour:
   - statName: Acceleration
     mutationChance: 0.1
     mutationStrength: 1
+    sideEffects:
+    - name: Burnt Energy
+      multiplier: 2.5
+      minimum: 0.25
+      onValueChanged:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: -5138389700123578108}
+            m_MethodName: set_EnergyCost
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+      onValueChangedVector:
+        m_PersistentCalls:
+          m_Calls: []
     onValueChanged:
       m_PersistentCalls:
         m_Calls:

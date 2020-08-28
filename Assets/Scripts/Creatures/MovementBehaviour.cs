@@ -27,6 +27,11 @@ namespace Assets.Scripts.Creatures
         private Creature creature = null;
         #endregion
 
+        #region Properties
+        /// <summary> How much health is lost per second due to movement. </summary>
+        public float EnergyCost { get; set; }
+        #endregion
+
         #region Stat Functions
         /// <summary> Adds each stat to the given <paramref name="seed"/>. </summary>
         /// <param name="seed"> The seet to fill with stats. </param>
@@ -47,7 +52,7 @@ namespace Assets.Scripts.Creatures
         {
             // Set the base creature.
             this.creature = creature;
-
+            
             // Initialise each stat.
             foreach (CreatureStat creatureStat in creatureStats)
                 creatureStat.InitialiseFromStats(stats);
@@ -66,11 +71,7 @@ namespace Assets.Scripts.Creatures
         #endregion
 
         #region Update Functions
-        private void FixedUpdate()
-        {
-            // TODO: Switch this out for something that removes energy based on distance travelled.
-            creature.Health -= 0.025f;
-        }
+        private void FixedUpdate() => creature.Health -= EnergyCost * Time.fixedDeltaTime;
         #endregion
     }
 }

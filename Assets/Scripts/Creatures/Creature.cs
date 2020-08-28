@@ -9,21 +9,21 @@ namespace Assets.Scripts.Creatures
     public class Creature : MonoBehaviour
     {
         #region Inspector Fields
-        [Range(1, 200)]
-        [Tooltip("How much health this creature starts with.")]
+        [Header("Mutation Stats")]
+        [Tooltip("How much health this creature has.")]
         [SerializeField]
-        private float health = 1;
+        private CreatureStat healthStat = new CreatureStat();
         #endregion
 
         #region Fields
+        /// <summary> The creature's health. </summary>
+        private float health = 1;
+
         /// <summary> The seed of the plant that spawned this creature. </summary>
         private Seed seed = null;
 
         /// <summary> The manager that spawned this creature. </summary>
         private CreatureManager creatureManager = null;
-
-        /// <summary> Is true if the creature is alive; false otherwise. </summary>
-        private bool isAlive;
 
         /// <summary> How long in seconds the creature has been alive. </summary>
         private float aliveTime = 0;
@@ -46,24 +46,12 @@ namespace Assets.Scripts.Creatures
                 health = value;
 
                 // If the health has dropped to 0 or lower, the creature is dead.
-                if (health <= 0) IsAlive = false;
+                if (health <= 0) creatureManager.CreatureDied(this);
             }
         }
 
         /// <summary> Is true if the creature is alive; false otherwise. </summary>
-        public bool IsAlive
-        {
-            get => isAlive;
-            private set
-            {
-                // If the creature is alive, set the value. The creature can't be brought back to life.
-                if (isAlive) isAlive = value;
-                else return;
-
-                // Tell the creature manager that this creature is dead, if it died.
-                if (!isAlive) creatureManager.CreatureDied(this);
-            }
-        }
+        public bool IsAlive => Health > 0;
 
         /// <summary> The object that the creature is trying to reach. </summary>
         public Transform GoalObject { get; private set; }
@@ -84,15 +72,15 @@ namespace Assets.Scripts.Creatures
             this.seed = seed;
             GoalObject = goalObject;
 
-            // Start off being alive.
-            isAlive = true;
-
             // Add the behaviours.
             findBehaviours();
 
             // Initialise each behaviour.
             foreach (ICreatureBehaviour creatureBehaviour in creatureBehaviours)
                 creatureBehaviour.InitialiseFromStats(this, seed.GeneticStats);
+
+            // Initialise each generic genetic stat.
+            healthStat.InitialiseFromStats(seed.GeneticStats);
         }
         #endregion
 
@@ -103,6 +91,9 @@ namespace Assets.Scripts.Creatures
         {
             // Create a new seed using the stats from this creature's seed.
             Seed droppedSeed = new Seed(seed.Generation + 1, seed.CropTileName);
+
+            // Populate with the generic genetic stats.
+            healthStat.PopulateSeed(droppedSeed);
 
             // Give each behaviour a chance to set the genetic and lifetime stats of the dropped seed.
             foreach (ICreatureBehaviour creatureBehaviour in creatureBehaviours)
