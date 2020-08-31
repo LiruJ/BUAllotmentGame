@@ -19,9 +19,6 @@ namespace Assets.Scripts.Creatures
         /// <summary> The creature's health. </summary>
         private float health = 1;
 
-        /// <summary> The seed of the plant that spawned this creature. </summary>
-        private Seed seed = null;
-
         /// <summary> The manager that spawned this creature. </summary>
         private CreatureManager creatureManager = null;
 
@@ -33,6 +30,9 @@ namespace Assets.Scripts.Creatures
         #endregion
 
         #region Properties
+        /// <summary> The seed of the plant that spawned this creature. </summary>
+        public Seed Seed { get; private set; }
+
         /// <summary> The current health of this creature. </summary>
         public float Health
         {
@@ -69,7 +69,7 @@ namespace Assets.Scripts.Creatures
         {
             // Set fields and properties.
             this.creatureManager = creatureManager;
-            this.seed = seed;
+            this.Seed = seed;
             GoalObject = goalObject;
 
             // Add the behaviours.
@@ -90,7 +90,7 @@ namespace Assets.Scripts.Creatures
         public Seed DropSeed()
         {
             // Create a new seed using the stats from this creature's seed.
-            Seed droppedSeed = new Seed(seed.Generation + 1, seed.CropTileName);
+            Seed droppedSeed = new Seed(Seed.Generation + 1, Seed.CropTileName);
 
             // Populate with the generic genetic stats.
             healthStat.PopulateSeed(droppedSeed);

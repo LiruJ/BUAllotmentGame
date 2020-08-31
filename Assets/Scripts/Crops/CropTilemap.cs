@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.BUCore.TileMap;
 using Assets.Scripts.Creatures;
+using Assets.Scripts.Player;
 using Assets.Scripts.Seeds;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,11 +15,9 @@ namespace Assets.Scripts.Crops
         [SerializeField]
         private CropTileset cropTileset = null;
 
+        [Tooltip("The player who owns this tilemap.")]
         [SerializeField]
-        private CreatureManager creatureManager = null;
-
-        [SerializeField]
-        private SeedManager seedManager = null;
+        private BasePlayer player = null;
         #endregion
 
         #region Fields
@@ -30,7 +29,7 @@ namespace Assets.Scripts.Crops
         #endregion
 
         #region Properties
-        public CreatureManager CreatureManager => creatureManager;
+        public CreatureManager CreatureManager => player.CreatureManager;
         #endregion
 
         #region Initialisation Functions
@@ -48,7 +47,7 @@ namespace Assets.Scripts.Crops
         public bool PlantSeed(int x, int y, Seed seed)
         {
             // The tile and seed stats cannot be null when planting a seed, so log an error if this happens.
-            if (seed == null || string.IsNullOrWhiteSpace(seed.CropTileName )|| seed.CropTileName == Tileset.EmptyTileName || seed.GeneticStats == null)
+            if (seed == null || string.IsNullOrWhiteSpace(seed.CropTileName)|| seed.CropTileName == Tileset.EmptyTileName || seed.GeneticStats == null)
             {
                 Debug.LogError($"Invalid seed {seed}.", this);
                 return false;
@@ -73,7 +72,7 @@ namespace Assets.Scripts.Crops
                 seedsByIndex[this[x, y].StatsIndex] = seed;
 
                 // Remove the seed from the seed manager, as it's now in the ground.
-                seedManager.RemoveSeed(seed);
+                player.SeedManager.RemoveSeed(seed);
 
                 return true;
             }

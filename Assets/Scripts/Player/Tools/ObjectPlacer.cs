@@ -6,14 +6,10 @@ namespace Assets.Scripts.Player.Tools
     /// <summary> The tool that allows the player to place object tiles. </summary>
     public class ObjectPlacer : Tool
     {
-        #region Inspector Fields
-        [Header("Maps")]
-        [Tooltip("The object tilemap of the world.")]
-        [SerializeField]
-        private ObjectTilemap objectTilemap = null;
-        #endregion
-
         #region Fields
+        /// <summary> The object tilemap of the world. </summary>
+        private ObjectTilemap objectTilemap;
+
         /// <summary> The currently selected object tile. </summary>
         private ObjectTile currentTile;
         #endregion
@@ -37,6 +33,10 @@ namespace Assets.Scripts.Player.Tools
                 if (TileIndicator.ShowGridGhost) TileIndicator.ChangeGridGhosts(value.Width, value.Height);
             }
         }
+        #endregion
+
+        #region Initialisation Functions
+        protected override void initialiseTool() => objectTilemap = worldMap.GetTilemap<ObjectTileData>() as ObjectTilemap;
         #endregion
 
         #region Tool Functions

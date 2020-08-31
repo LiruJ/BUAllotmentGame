@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace Assets.Scripts.BUCore.TileMap
 {
@@ -60,6 +61,13 @@ namespace Assets.Scripts.BUCore.TileMap
 
         /// <summary> The height (z axis) of the map in tiles. </summary>
         public int Height => worldMap.Height;
+        #endregion
+
+        #region Events
+        [Header("Events")]
+        [Tooltip("Fired after each tick.")]
+        [SerializeField]
+        private UnityEvent onTick = new UnityEvent();
         #endregion
 
         #region Initialisation Functions
@@ -273,6 +281,9 @@ namespace Assets.Scripts.BUCore.TileMap
                     // If the tile has logic, tick it.
                     if (tile != null && tile.HasTileLogic) tile.TileLogic.OnTick(this, x, y);
                 }
+
+            // Invoke the on tick event.
+            onTick.Invoke();
         }
         #endregion
 

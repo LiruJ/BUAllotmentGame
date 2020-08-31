@@ -26,10 +26,10 @@ namespace Assets.Scripts.Player.Tools
 
         #region Properties
         /// <summary> The <see cref="Camera"/> used by the player. </summary>
-        public Camera PlayerCamera => toolBelt.PlayerCamera;
+        protected Camera playerCamera => toolBelt.Player.PlayerCamera;
 
         /// <summary> The main world map. </summary>
-        public WorldMap WorldMap => toolBelt.WorldMap;
+        protected WorldMap worldMap => toolBelt.Player.WorldMap;
 
         /// <summary> The object used to indicate the player's action. </summary>
         public PlacementIndicator TileIndicator => toolBelt.TileIndicator;
@@ -39,7 +39,17 @@ namespace Assets.Scripts.Player.Tools
         #endregion
 
         #region Initialisation Functions
-        public virtual void Start() => toolBelt = GetComponentInParent<ToolBelt>();
+        private void Start()
+        {
+            // Set the toolbelt.
+            toolBelt = GetComponentInParent<ToolBelt>();
+
+            // Call the initialise tool function for the derived tool type.
+            initialiseTool();
+        }
+
+        /// <summary> This is fired after the tool's underlying references have been solved and any tool-specific logic can be initialised. </summary>
+        protected virtual void initialiseTool() { }
 
         /// <summary> Is fired when this tool is selected. </summary>
         public virtual void OnSelected() { }

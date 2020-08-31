@@ -9,13 +9,9 @@ namespace Assets.Scripts.Player.Tools
     {
         #region Inspector Fields
         [Header("Dependencies")]
-        [Tooltip("The player's camera.")]
+        [Tooltip("The player who owns this toolbelt.")]
         [SerializeField]
-        private Camera playerCamera = null;
-
-        [Tooltip("The main world map.")]
-        [SerializeField]
-        private WorldMap worldMap = null;
+        private HumanPlayer player = null;
 
         [Tooltip("The object used to indicate the player's action.")]
         [SerializeField]
@@ -28,6 +24,9 @@ namespace Assets.Scripts.Player.Tools
         #endregion
 
         #region Properties
+        /// <summary> The player who owns this toolbelt. </summary>
+        public HumanPlayer Player => player;
+
         /// <summary> Gets the currently active <see cref="Tool"/>, or null if none is selected. </summary>
         public Tool CurrentTool { get; private set; }
 
@@ -54,12 +53,6 @@ namespace Assets.Scripts.Player.Tools
             }
         }
 
-        /// <summary> Gets the camera used by the player. </summary>
-        public Camera PlayerCamera => playerCamera;
-
-        /// <summary> Gets the main world map. </summary>
-        public WorldMap WorldMap => worldMap;
-
         /// <summary> Gets the object used to indicate object placement. </summary>
         public PlacementIndicator TileIndicator => tileIndicator;
         #endregion
@@ -67,12 +60,12 @@ namespace Assets.Scripts.Player.Tools
         #region Initialisation Functions
         private void Awake()
         {
+            // Add null as the none tool type, to signify no tool.
+            toolsByType.Add(ToolType.None, null);
+
             // Add each tool in the children of the containing GameObject to the dictionary, keyed by its type.
             foreach (Tool tool in GetComponentsInChildren<Tool>())
                 toolsByType.Add(tool.ToolType, tool);
-
-            // Add null as the none tool type, to signify no tool.
-            toolsByType.Add(ToolType.None, null);
         }
         #endregion
 
@@ -84,15 +77,6 @@ namespace Assets.Scripts.Player.Tools
         }
         #endregion
 
-        #region Tool functions
-        /// <summary> Changes the <see cref="CurrentTool"/> to that with the given <paramref name="toolType"/>. </summary>
-        /// <param name="toolType"> The type of tool to switch to. </param>
-        public void SwitchTool(ToolType toolType)
-        {
-
-        }
-        #endregion
-
         #region Screen Functions
         /// <summary> Calculates the position of the tile at the given <paramref name="screenPosition"/>. </summary>
         /// <param name="screenPosition"> The position on the screen. </param>
@@ -100,10 +84,10 @@ namespace Assets.Scripts.Player.Tools
         public Vector3Int ScreenPositionToCell(Vector3 screenPosition)
         {
             // Create the ray from the position.
-            Ray screenRay = playerCamera.ScreenPointToRay(screenPosition);
+            Ray screenRay = Player.PlayerCamera.ScreenPointToRay(screenPosition);
 
             // Simple rearranging of the parametric form of the screen ray, where we know the y position will be the same as the map's y position.
-            return worldMap.Grid.WorldToCell(screenRay.origin + (worldMap.transform.position.y - screenRay.origin.y) / screenRay.direction.y * screenRay.direction);
+            return Player.WorldMap.Grid.WorldToCell(screenRay.origin + (Player.WorldMap.transform.position.y - screenRay.origin.y) / screenRay.direction.y * screenRay.direction);
         }
         #endregion
     }

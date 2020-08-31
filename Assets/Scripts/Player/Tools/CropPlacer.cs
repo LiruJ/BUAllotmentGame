@@ -8,14 +8,10 @@ namespace Assets.Scripts.Player.Tools
     /// <summary> The tool that allows the player to place crops. </summary>
     public class CropPlacer : Tool
     {
-        #region Inspector Fields
-        [Header("Maps")]
-        [Tooltip("The crop tilemap of the world.")]
-        [SerializeField]
-        private CropTilemap cropTilemap = null;
-        #endregion
-
         #region Fields
+        /// <summary> The crop tilemap of the world. </summary>
+        private CropTilemap cropTilemap;
+
         /// <summary> The currently selected seed generation. </summary>
         private SeedGeneration currentSeedGeneration;
         #endregion
@@ -45,6 +41,10 @@ namespace Assets.Scripts.Player.Tools
                 }
             }
         }
+        #endregion
+
+        #region Initialisation Functions
+        protected override void initialiseTool() => cropTilemap = worldMap.GetTilemap<CropTileData>() as CropTilemap;
         #endregion
 
         #region Tool Functions

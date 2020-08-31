@@ -22,9 +22,6 @@ namespace Assets.Scripts.Seeds
         /// <summary> The numerical generation count. </summary>
         public uint Generation { get; }
 
-        /// <summary> The string representation of this generation used to identify it. </summary>
-        public string UniqueIdentifier => CalculateUniqueIdentifier(CropTileName, Generation);
-
         /// <summary> The collection of stat names and associated weights used to sort the seeds. </summary>
         public Dictionary<string, float> ScoreFilter { get; } = new Dictionary<string, float>();
 
@@ -113,19 +110,6 @@ namespace Assets.Scripts.Seeds
             foreach (string statName in priorGeneration.ScoreFilter.Keys)
                 ScoreFilter.Add(statName, priorGeneration.ScoreFilter[statName]);
         }
-        #endregion
-
-        #region Calculation Functions
-        /// <summary> Calculates an ID from the given <paramref name="seed"/>. </summary>
-        /// <param name="seed"> The seed from which the ID is created. </param>
-        /// <returns> The calculated ID. </returns>
-        public static string CalculateUniqueIdentifier(Seed seed) => CalculateUniqueIdentifier(seed.CropTileName, seed.Generation);
-
-        /// <summary> Calculates an ID from the given <paramref name="cropTileName"/> and <paramref name="generation"/>. </summary>
-        /// <param name="cropTileName"> The name of the crop. </param>
-        /// <param name="generation"> The generation number. </param>
-        /// <returns> The calculated ID. </returns>
-        public static string CalculateUniqueIdentifier(string cropTileName, uint generation) => cropTileName + generation;
         #endregion
     }
 }

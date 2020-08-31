@@ -7,11 +7,6 @@ namespace Assets.Scripts.Player.Tools
     public class FloorPlacer : Tool
     {
         #region Inspector Fields
-        [Header("Maps")]
-        [Tooltip("The floor tilemap of the world.")]
-        [SerializeField]
-        private FloorTilemap floorTilemap = null;
-
         [Header("Prefabs")]
         [Tooltip("The prefab used for the placement ghost, as floor tiles do not always have tile objects.")]
         [SerializeField]
@@ -19,6 +14,9 @@ namespace Assets.Scripts.Player.Tools
         #endregion
 
         #region Fields
+        /// <summary> The floor tilemap of the world. </summary>
+        private FloorTilemap floorTilemap;
+
         /// <summary> The currently selected floor tile. </summary>
         private FloorTile currentTile;
         #endregion
@@ -37,6 +35,10 @@ namespace Assets.Scripts.Player.Tools
                 TileIndicator.ShowObjectGhost = value != null;
             }
         }
+        #endregion
+
+        #region Initialisation Functions
+        protected override void initialiseTool() => floorTilemap = worldMap.GetTilemap<FloorTileData>() as FloorTilemap;
         #endregion
 
         #region Tool Functions
