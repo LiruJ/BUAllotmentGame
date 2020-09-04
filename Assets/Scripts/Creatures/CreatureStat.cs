@@ -28,6 +28,16 @@ namespace Assets.Scripts.Creatures
         [SerializeField]
         private float mutationStrength = 0.1f;
 
+        [Range(-10000, 10000)]
+        [Tooltip("The smallest value that this stat can be.")]
+        [SerializeField]
+        private float minimum = 0;
+
+        [Range(-10000, 10000)]
+        [Tooltip("The value that the stat will initialise to.")]
+        [SerializeField]
+        private float startingValue = 0;
+
         [SerializeField]
         private List<StatSideEffect> sideEffects = new List<StatSideEffect>();
         #endregion
@@ -44,20 +54,15 @@ namespace Assets.Scripts.Creatures
             get => value;
             private set
             {
-                // Save the old value and set the new value.
-                float oldValue = this.value;
-                this.value = value;
+                // Set the new value, respecting the minimum allowed value.
+                this.value = Math.Max(minimum, value);
 
-                // If the value changed, invoke the event.
-                if (oldValue != value)
-                {
-                    // Invoke the main event first.
-                    onValueChanged.Invoke(this.value);
+                // Invoke the main event first.
+                onValueChanged.Invoke(this.value);
 
-                    // Invoke all side effect events.
-                    foreach (StatSideEffect sideEffect in sideEffects)
-                        sideEffect.Invoke(this.value);
-                }
+                // Invoke all side effect events.
+                foreach (StatSideEffect sideEffect in sideEffects)
+                    sideEffect.Invoke(this.value);
             }
         }
         #endregion
@@ -89,7 +94,7 @@ namespace Assets.Scripts.Creatures
                 // Roll for mutation.
                 if (UnityEngine.Random.value >= mutationChance) newValue += UnityEngine.Random.Range(-mutationStrength, mutationStrength);
             }
-            else newValue = UnityEngine.Random.Range(-mutationStrength, mutationStrength);
+            else newValue = startingValue + UnityEngine.Random.Range(-mutationStrength, mutationStrength);
 
             // Set the main stat value, invoking the event.
             Value = newValue;

@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Seeds;
+﻿using Assets.Scripts.Player;
+using Assets.Scripts.Seeds;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ namespace Assets.Scripts.Creatures
         private float aliveTime = 0;
 
         /// <summary> The creature's behaviours. </summary>
-        private readonly List<ICreatureBehaviour> creatureBehaviours = new List<ICreatureBehaviour>();
+        private readonly List<CreatureBehaviour> creatureBehaviours = new List<CreatureBehaviour>();
         #endregion
 
         #region Properties
@@ -55,11 +56,14 @@ namespace Assets.Scripts.Creatures
 
         /// <summary> The object that the creature is trying to reach. </summary>
         public Transform GoalObject { get; private set; }
+
+        /// <summary> The player who owns this creature. </summary>
+        public BasePlayer Player => creatureManager.Player;
         #endregion
 
         #region Stat Functions
         /// <summary> Finds and stores every behaviour of the creature. </summary>
-        private void findBehaviours() => creatureBehaviours.AddRange(GetComponents<ICreatureBehaviour>());
+        private void findBehaviours() => creatureBehaviours.AddRange(GetComponents<CreatureBehaviour>());
 
         /// <summary> Initialises the creature using the given <paramref name="seed"/>. </summary>
         /// <param name="creatureManager"> The manager that spawned this creature. </param>
@@ -76,7 +80,7 @@ namespace Assets.Scripts.Creatures
             findBehaviours();
 
             // Initialise each behaviour.
-            foreach (ICreatureBehaviour creatureBehaviour in creatureBehaviours)
+            foreach (CreatureBehaviour creatureBehaviour in creatureBehaviours)
                 creatureBehaviour.InitialiseFromStats(this, seed.GeneticStats);
 
             // Initialise each generic genetic stat.
@@ -96,7 +100,7 @@ namespace Assets.Scripts.Creatures
             healthStat.PopulateSeed(droppedSeed);
 
             // Give each behaviour a chance to set the genetic and lifetime stats of the dropped seed.
-            foreach (ICreatureBehaviour creatureBehaviour in creatureBehaviours)
+            foreach (CreatureBehaviour creatureBehaviour in creatureBehaviours)
                 creatureBehaviour.PopulateSeed(droppedSeed);
 
             // Calculate the generic lifetime stats of this creature.

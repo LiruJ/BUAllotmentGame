@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2824095536396055078}
   - component: {fileID: 8801622652802084034}
   - component: {fileID: 5323987589955192259}
+  - component: {fileID: 5657431825817014445}
   - component: {fileID: 7720806416388348395}
   m_Layer: 5
   m_Name: ToolIconButton
@@ -86,7 +87,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AspectMode: 2
   m_AspectRatio: 1
---- !u!114 &7720806416388348395
+--- !u!114 &5657431825817014445
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,7 +96,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5912577765231351523}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22a80a03f3380b54d887a681da685bdd, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -126,14 +127,20 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 8801622652802084034}
-  toggleTransition: 1
-  graphic: {fileID: 0}
-  m_Group: {fileID: 0}
-  onValueChanged:
+  m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 0
-  toolType: 0
-  onSelected:
-    m_PersistentCalls:
-      m_Calls: []
+--- !u!114 &7720806416388348395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5912577765231351523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22a80a03f3380b54d887a681da685bdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 5657431825817014445}
+  <ToolType>k__BackingField: 0

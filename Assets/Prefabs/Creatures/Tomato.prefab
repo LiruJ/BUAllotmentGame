@@ -93,13 +93,17 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2531037247308440413}
+  - component: {fileID: 4765001061530137078}
   - component: {fileID: 4312929206105439139}
   - component: {fileID: 6558852052695232240}
   - component: {fileID: 1455826042523861542}
   - component: {fileID: -1043795940545849968}
   - component: {fileID: 393457275599381589}
   - component: {fileID: -5138389700123578108}
-  m_Layer: 0
+  - component: {fileID: 7991446258997644967}
+  - component: {fileID: -5340554717337402429}
+  - component: {fileID: -5885037634456185397}
+  m_Layer: 8
   m_Name: Tomato
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120,9 +124,22 @@ Transform:
   - {fileID: 6827261986106864677}
   - {fileID: 8512692181590696527}
   - {fileID: 5458278082131686995}
+  - {fileID: 5138160559395233641}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4765001061530137078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937761193070289948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2207442bd02bf4478b352be979879b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!95 &4312929206105439139
 Animator:
   serializedVersion: 3
@@ -209,7 +226,9 @@ MonoBehaviour:
   healthStat:
     statName: MaxHealth
     mutationChance: 0.05
-    mutationStrength: 10
+    mutationStrength: 2.5
+    minimum: 0
+    startingValue: 20
     sideEffects:
     - name: Mass
       multiplier: 0.1
@@ -277,11 +296,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c55dfe56e6a804643b7b932249770b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  navMeshAgent: {fileID: -1043795940545849968}
   creatureStats:
   - statName: MaxSpeed
     mutationChance: 0.1
-    mutationStrength: 1
+    mutationStrength: 0.25
+    minimum: 0
+    startingValue: 1
     sideEffects:
     - name: Drag
       multiplier: 2
@@ -319,7 +339,9 @@ MonoBehaviour:
           m_CallState: 2
   - statName: Acceleration
     mutationChance: 0.1
-    mutationStrength: 1
+    mutationStrength: 0.25
+    minimum: 0
+    startingValue: 1
     sideEffects:
     - name: Burnt Energy
       multiplier: 2.5
@@ -355,6 +377,327 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  navMeshAgent: {fileID: -1043795940545849968}
+  animator: {fileID: 4312929206105439139}
+--- !u!114 &7991446258997644967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937761193070289948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1c2d8955f102714f8d8271ccce0e38f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  creatureStats:
+  - statName: HealthWeight
+    mutationChance: 0.1
+    mutationStrength: 1
+    minimum: -1000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7991446258997644967}
+          m_MethodName: set_HealthWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: SightRange
+    mutationChance: 0.05
+    mutationStrength: 0.5
+    minimum: 0
+    startingValue: 2
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7991446258997644967}
+          m_MethodName: set_SightRange
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: Bias
+    mutationChance: 0.2
+    mutationStrength: 0.25
+    minimum: -1000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7991446258997644967}
+          m_MethodName: set_Bias
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: CheckInterval
+    mutationChance: 0.1
+    mutationStrength: 0.05
+    minimum: 0.1
+    startingValue: 0.2
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7991446258997644967}
+          m_MethodName: set_TimeBetweenSightChecks
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: DistanceWeight
+    mutationChance: 0.1
+    mutationStrength: 1
+    minimum: -1000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7991446258997644967}
+          m_MethodName: set_DistanceWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  eyeOrigin: {fileID: 5138160559395233641}
+  timeBetweenSightChecks: 0
+--- !u!114 &-5340554717337402429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937761193070289948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15a8a6dec68eb1840acced5fa616b56f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  creatureStats:
+  - statName: AttackRange
+    mutationChance: 0.05
+    mutationStrength: 0.1
+    minimum: 0.1
+    startingValue: 1
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: -5340554717337402429}
+          m_MethodName: set_Range
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: MeleeDamage
+    mutationChance: 0.3
+    mutationStrength: 0.1
+    minimum: 0
+    startingValue: 5
+    sideEffects:
+    - name: Weapon Size
+      multiplier: 0.2
+      minimum: 1
+      onValueChanged:
+        m_PersistentCalls:
+          m_Calls: []
+      onValueChangedVector:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 3947886901099780139}
+            m_MethodName: set_localScale
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: -5340554717337402429}
+          m_MethodName: set_Damage
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: MeleeRate
+    mutationChance: 0.2
+    mutationStrength: 0.01
+    minimum: 0.5
+    startingValue: 1
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: -5340554717337402429}
+          m_MethodName: set_AttackInterval
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  onAttack:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -5885037634456185397}
+        m_MethodName: PlayOneShot
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 8300000, guid: 90ed0d65edeb9284fbf09f3c08bf98a3,
+            type: 3}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!82 &-5885037634456185397
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937761193070289948}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &2024565240699870662
 GameObject:
   m_ObjectHideFlags: 0
@@ -415,6 +758,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2531037247308440413}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8686545877293334844
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5138160559395233641}
+  m_Layer: 0
+  m_Name: EyeOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5138160559395233641
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8686545877293334844}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1704, z: 0.0933}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2531037247308440413}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &8337010594014163761
 PrefabInstance:
@@ -482,6 +855,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Pole
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: f37311c279f41134ca6c03c5ffcebfaa,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f37311c279f41134ca6c03c5ffcebfaa, type: 3}

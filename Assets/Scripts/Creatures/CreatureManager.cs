@@ -1,8 +1,7 @@
-﻿using Assets.Scripts.Crops;
+﻿using Assets.Scripts.Player;
 using Assets.Scripts.Seeds;
 using System;
 using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,13 +12,9 @@ namespace Assets.Scripts.Creatures
     {
         #region Inspector Fields
         [Header("Dependencies")]
-        [Tooltip("The crop tilemap of the player.")]
+        [Tooltip("The player who owns this creature manager.")]
         [SerializeField]
-        private CropTilemap cropTilemap = null;
-
-        [Tooltip("The seed manager of the player.")]
-        [SerializeField]
-        private SeedManager seedManager = null;
+        private BasePlayer player = null;
 
         [Tooltip("The endpoint that all creatures belonging to this player wish to reach.")]
         [SerializeField]
@@ -32,6 +27,11 @@ namespace Assets.Scripts.Creatures
 
         #region Fields
         private readonly Dictionary<int, Creature> creaturesByInstanceID = new Dictionary<int, Creature>();
+        #endregion
+
+        #region Properties
+        /// <summary> The player who owns this creature manager. </summary>
+        public BasePlayer Player => player;
         #endregion
 
         #region Events
@@ -47,8 +47,8 @@ namespace Assets.Scripts.Creatures
         public void SpawnCreature(Seed seed, Creature creaturePrefab, int plantX, int plantY)
         {
             // Create an instance of the given prefab and position it in the middle of the plant tile.
-            GameObject creatureInstance = Instantiate(creaturePrefab.gameObject, 
-                cropTilemap.Grid.CellToWorld(new Vector3Int(plantX, 0, plantY)) + new Vector3(cropTilemap.Grid.cellSize.x * 0.5f, 0, cropTilemap.Grid.cellSize.z * 0.5f), Quaternion.identity, creatureContainer);
+            GameObject creatureInstance = Instantiate(creaturePrefab.gameObject,
+                player.WorldMap.Grid.CellToWorld(new Vector3Int(plantX, 0, plantY)) + new Vector3(player.WorldMap.Grid.cellSize.x * 0.5f, 0, player.WorldMap.Grid.cellSize.z * 0.5f), Quaternion.identity, creatureContainer);
 
             // Set the name of the creature.
             creatureInstance.name = $"{seed.CropTileName} creature generation {seed.Generation}";
@@ -69,7 +69,7 @@ namespace Assets.Scripts.Creatures
             Seed seed = creature.DropSeed();
 
             // Add the seed to the seed manager.
-            seedManager.AddSeed(seed);
+            player.SeedManager.AddSeed(seed);
 
             // Remove the creature from the collection.
             if (!creaturesByInstanceID.Remove(creature.gameObject.GetInstanceID())) Debug.LogError($"Creature {creature.gameObject.GetInstanceID()} could not be removed.", creature.gameObject);

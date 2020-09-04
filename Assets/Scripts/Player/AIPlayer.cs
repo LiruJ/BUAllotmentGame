@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Crops;
 using Assets.Scripts.Seeds;
+using UnityEngine;
 
 namespace Assets.Scripts.Player
 {
@@ -7,7 +8,8 @@ namespace Assets.Scripts.Player
     public class AIPlayer : BasePlayer
     {
         #region Inspector Fields
-
+        [SerializeField]
+        private int zLine = 0;
         #endregion
 
         #region Fields
@@ -34,15 +36,18 @@ namespace Assets.Scripts.Player
             // Set up the score filter.
             // TODO: Better way of doing this.
             SeedGeneration firstGeneration = SeedManager.GetLatestGenerationOfCropType("Tomato");
-            firstGeneration.ScoreFilter.Add("DistanceFromGoal", -4);
+            firstGeneration.ScoreFilter.Add("DistanceFromGoal", -2);
             firstGeneration.ScoreFilter.Add("AliveTime", 0.5f);
+            firstGeneration.ScoreFilter.Add("MaxConcurrentSeenCreatures", 1);
+            firstGeneration.ScoreFilter.Add("DamageDealt", 10);
+            firstGeneration.ScoreFilter.Add("Kills", 10);
         }
 
         private void plantCrops()
         {
             for (int x = 0; x < WorldMap.Width; x++)
-                if (cropTilemap.IsTileEmpty(x, 0))
-                    cropTilemap.PlantSeed(x, 0, SeedManager.GetLatestGenerationOfCropType("Tomato").GetBestSeed());
+                if (cropTilemap.IsTileEmpty(x, zLine))
+                    cropTilemap.PlantSeed(x, zLine, SeedManager.GetLatestGenerationOfCropType("Tomato").GetBestSeed());
         }
 
         public void PlantNextGeneration(uint generation) => plantCrops();

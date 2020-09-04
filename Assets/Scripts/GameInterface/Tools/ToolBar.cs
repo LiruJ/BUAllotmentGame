@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Player.Tools;
+﻿using Assets.Scripts.GameInterface;
+using Assets.Scripts.Player.Tools;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
@@ -6,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public class ToolBar : MonoBehaviour
+    public class ToolBar : MonoBehaviour, ISelectionBar<ToolIcon>
     {
         #region Events
         [Serializable]
@@ -17,15 +18,9 @@ namespace Assets.Scripts.UI.Tools
         #endregion
 
         #region Initialisation Functions
-        private void Start()
-        {
-            GetComponent<HorizontalLayoutGroup>().enabled = true;
+        private void Start() => GetComponent<HorizontalLayoutGroup>().enabled = true;
 
-            ToolIcon[] toolIcons = GetComponentsInChildren<ToolIcon>();
-
-            foreach (ToolIcon toolIcon in toolIcons)
-                toolIcon.OnSelected.AddListener((toolType) =>  onCurrentToolChanged.Invoke(toolType));
-        }
+        public void OnButtonSelected(ToolIcon button) => onCurrentToolChanged.Invoke(button.ToolType);
         #endregion
     }
 }
