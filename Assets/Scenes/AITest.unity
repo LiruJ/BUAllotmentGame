@@ -351,7 +351,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 352791187}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8, y: 0, z: 8}
+  m_LocalPosition: {x: 8, y: 0, z: 50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -508,7 +508,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 499521859}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8, y: 0, z: 92}
+  m_LocalPosition: {x: 8, y: 0, z: 50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -844,7 +844,8 @@ MonoBehaviour:
   worldMap: {fileID: 2043717456}
   creatureManager: {fileID: 170008324}
   seedManager: {fileID: 157546762}
-  zLine: 0
+  tomatoZ: 0
+  asparagusZ: 1
 --- !u!4 &780207114
 Transform:
   m_ObjectHideFlags: 0
@@ -1242,7 +1243,8 @@ MonoBehaviour:
   worldMap: {fileID: 420066968}
   creatureManager: {fileID: 695057832}
   seedManager: {fileID: 489010183}
-  zLine: 15
+  tomatoZ: 15
+  asparagusZ: 14
 --- !u!4 &1301305200
 Transform:
   m_ObjectHideFlags: 0

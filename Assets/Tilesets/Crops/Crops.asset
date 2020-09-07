@@ -20,3 +20,9 @@ MonoBehaviour:
     cropTileLogic: {fileID: 11400000, guid: 833e262c77ed23a47b3c75e939da5b47, type: 2}
     requiredFloor: FarmLand
     icon: {fileID: -9150622835112388582, guid: 7ce68f1c1a35c6443b1b1ba249df96c2, type: 3}
+  - name: Asparagus
+    tileObject: {fileID: -927199367670048503, guid: 751845b5d9cf5054dbdf01df908419b4,
+      type: 3}
+    cropTileLogic: {fileID: 11400000, guid: 15ac77e77a65e2745b4086cd813a42ed, type: 2}
+    requiredFloor: FarmLand
+    icon: {fileID: -7105404207338529912, guid: 7ce68f1c1a35c6443b1b1ba249df96c2, type: 3}

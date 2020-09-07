@@ -9,7 +9,10 @@ namespace Assets.Scripts.Player
     {
         #region Inspector Fields
         [SerializeField]
-        private int zLine = 0;
+        private int tomatoZ = 0;
+
+        [SerializeField]
+        private int asparagusZ = 0;
         #endregion
 
         #region Fields
@@ -35,19 +38,30 @@ namespace Assets.Scripts.Player
         {
             // Set up the score filter.
             // TODO: Better way of doing this.
-            SeedGeneration firstGeneration = SeedManager.GetLatestGenerationOfCropType("Tomato");
-            firstGeneration.ScoreFilter.Add("DistanceFromGoal", -2);
-            firstGeneration.ScoreFilter.Add("AliveTime", 0.5f);
-            firstGeneration.ScoreFilter.Add("MaxConcurrentSeenCreatures", 1);
-            firstGeneration.ScoreFilter.Add("DamageDealt", 10);
-            firstGeneration.ScoreFilter.Add("Kills", 10);
+            SeedGeneration tomatoSeeds = SeedManager.GetLatestGenerationOfCropType("Tomato");
+            tomatoSeeds.ScoreFilter.Add("DistanceFromGoal", -2);
+            tomatoSeeds.ScoreFilter.Add("AliveTime", 0.5f);
+            tomatoSeeds.ScoreFilter.Add("MaxConcurrentSeenCreatures", 1);
+            tomatoSeeds.ScoreFilter.Add("DamageDealt", 10);
+            tomatoSeeds.ScoreFilter.Add("Kills", 10);
+
+            SeedGeneration asparagusSeeds = SeedManager.GetLatestGenerationOfCropType("Asparagus");
+            asparagusSeeds.ScoreFilter.Add("DistanceFromGoal", -2);
+            asparagusSeeds.ScoreFilter.Add("AliveTime", 0.5f);
+            asparagusSeeds.ScoreFilter.Add("MaxConcurrentSeenCreatures", 1);
+            asparagusSeeds.ScoreFilter.Add("DamageDealt", 10);
+            asparagusSeeds.ScoreFilter.Add("Kills", 10);
         }
 
         private void plantCrops()
         {
             for (int x = 0; x < WorldMap.Width; x++)
-                if (cropTilemap.IsTileEmpty(x, zLine))
-                    cropTilemap.PlantSeed(x, zLine, SeedManager.GetLatestGenerationOfCropType("Tomato").GetBestSeed());
+            {
+                if (cropTilemap.IsTileEmpty(x, tomatoZ))
+                    cropTilemap.PlantSeed(x, tomatoZ, SeedManager.GetLatestGenerationOfCropType("Tomato").GetBestSeed());
+                if (cropTilemap.IsTileEmpty(x, asparagusZ))
+                    cropTilemap.PlantSeed(x, asparagusZ, SeedManager.GetLatestGenerationOfCropType("Asparagus").GetBestSeed());
+            }
         }
 
         public void PlantNextGeneration(uint generation) => plantCrops();
