@@ -192,7 +192,7 @@ GameObject:
   - component: {fileID: 7507049759001555658}
   - component: {fileID: 3700261801286970102}
   - component: {fileID: 8805252529312565611}
-  - component: {fileID: 1416507402235610851}
+  - component: {fileID: 4968430239771915622}
   - component: {fileID: 6737319872773655599}
   m_Layer: 8
   m_Name: AsparagusGirl
@@ -504,20 +504,11 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: SightRange
-    mutationChance: 0.05
-    mutationStrength: 0.5
+    mutationChance: 0.2
+    mutationStrength: 1
     minimum: 0
-    startingValue: 2
-    sideEffects:
-    - name: 
-      multiplier: 1
-      minimum: 0
-      onValueChanged:
-        m_PersistentCalls:
-          m_Calls: []
-      onValueChangedVector:
-        m_PersistentCalls:
-          m_Calls: []
+    startingValue: 15
+    sideEffects: []
     onValueChanged:
       m_PersistentCalls:
         m_Calls:
@@ -594,7 +585,7 @@ MonoBehaviour:
           m_CallState: 2
   eyeOrigin: {fileID: 152986140969454477}
   timeBetweenSightChecks: 0
---- !u!114 &1416507402235610851
+--- !u!114 &4968430239771915622
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -603,80 +594,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 8641952391395494159}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15a8a6dec68eb1840acced5fa616b56f, type: 3}
+  m_Script: {fileID: 11500000, guid: 6eebcce7016f7a942866682e28ede2e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   creatureStats:
-  - statName: AttackRange
+  - statName: MaxPower
+    mutationChance: 0.05
+    mutationStrength: 1
+    minimum: 1
+    startingValue: 2
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_MaxPower
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: AttackInterval
     mutationChance: 0.05
     mutationStrength: 0.1
-    minimum: 0.1
-    startingValue: 1
+    minimum: 2.5
+    startingValue: 2.5
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1416507402235610851}
-          m_MethodName: set_Range
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - statName: MeleeDamage
-    mutationChance: 0.3
-    mutationStrength: 0.1
-    minimum: 0
-    startingValue: 5
-    sideEffects:
-    - name: Weapon Size
-      multiplier: 0.2
-      minimum: 1
-      onValueChanged:
-        m_PersistentCalls:
-          m_Calls: []
-      onValueChangedVector:
-        m_PersistentCalls:
-          m_Calls:
-          - m_Target: {fileID: 8362365646548083986}
-            m_MethodName: set_localScale
-            m_Mode: 0
-            m_Arguments:
-              m_ObjectArgument: {fileID: 0}
-              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-              m_IntArgument: 0
-              m_FloatArgument: 0
-              m_StringArgument: 
-              m_BoolArgument: 0
-            m_CallState: 2
-    onValueChanged:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1416507402235610851}
-          m_MethodName: set_Damage
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - statName: MeleeRate
-    mutationChance: 0.2
-    mutationStrength: 0.01
-    minimum: 0.5
-    startingValue: 1
-    sideEffects: []
-    onValueChanged:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1416507402235610851}
+        - m_Target: {fileID: 4968430239771915622}
           m_MethodName: set_AttackInterval
           m_Mode: 0
           m_Arguments:
@@ -687,21 +638,249 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-  onAttack:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6737319872773655599}
-        m_MethodName: PlayOneShot
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 8300000, guid: 90ed0d65edeb9284fbf09f3c08bf98a3,
-            type: 3}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  - statName: PowerBias
+    mutationChance: 0.05
+    mutationStrength: 1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_PowerBias
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: PowerHealthWeight
+    mutationChance: 0.05
+    mutationStrength: 1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_PowerHealthWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: PowerDistanceWeight
+    mutationChance: 0.05
+    mutationStrength: 1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_PowerDistanceWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: PitchBias
+    mutationChance: 0.05
+    mutationStrength: 1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_PitchBias
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: PitchSpeedWeight
+    mutationChance: 0.05
+    mutationStrength: 1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_PitchSpeedWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: PitchDistanceWeight
+    mutationChance: 0.05
+    mutationStrength: 1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_PitchDistanceWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: PitchPowerWeight
+    mutationChance: 0.05
+    mutationStrength: 1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_PitchPowerWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: YawBias
+    mutationChance: 0.05
+    mutationStrength: 0.1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_YawBias
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: YawAngleWeight
+    mutationChance: 0.05
+    mutationStrength: 0.1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_YawAngleWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: YawPowerWeight
+    mutationChance: 0.05
+    mutationStrength: 0.1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_YawPowerWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: YawSpeedWeight
+    mutationChance: 0.05
+    mutationStrength: 0.1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_YawSpeedWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: YawDistanceWeight
+    mutationChance: 0.05
+    mutationStrength: 0.1
+    minimum: -10000
+    startingValue: 0
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_YawDistanceWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  heldWeapon: {fileID: 8362365646548083986}
+  projectilePrefab: {fileID: 4613480350917177717, guid: 24ae795471559e8458bc66c046e68599,
+    type: 3}
 --- !u!82 &6737319872773655599
 AudioSource:
   m_ObjectHideFlags: 0
@@ -808,17 +987,17 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: ee07a0e4a71cb0345a5a372a5fbfacfc,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.378
+      value: -0.0189
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ee07a0e4a71cb0345a5a372a5fbfacfc,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.049
+      value: -0.0701
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ee07a0e4a71cb0345a5a372a5fbfacfc,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.042
+      value: -0.0367
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ee07a0e4a71cb0345a5a372a5fbfacfc,
         type: 3}

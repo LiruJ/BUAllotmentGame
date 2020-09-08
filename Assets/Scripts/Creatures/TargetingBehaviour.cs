@@ -27,9 +27,10 @@ namespace Assets.Scripts.Creatures
         private uint maxConcurrentSeenCreatures = 0;
 
         private float timeSinceLastSightCheck = 0.0f;
-        private readonly Collider[] seenColliders = new Collider[10];
 
-        private readonly List<Tuple<Creature, Collider>> seenEnemies = new List<Tuple<Creature, Collider>>();
+        private readonly Collider[] seenColliders = new Collider[25];
+
+        private readonly List<CreatureTarget> seenEnemies = new List<CreatureTarget>();
         #endregion
 
         #region Properties
@@ -44,7 +45,9 @@ namespace Assets.Scripts.Creatures
 
         public float DistanceWeight { get; set; }
 
-        public Creature CurrentTarget { get; private set; }
+        public CreatureTarget? CurrentTarget { get; private set; }
+
+        public bool HasCurrentTarget => CurrentTarget.HasValue && CurrentTarget.Value.Target != null;
         #endregion
 
         #region Stat Functions
@@ -55,7 +58,12 @@ namespace Assets.Scripts.Creatures
         #endregion
 
         #region Update Functions
-        private void FixedUpdate() => checkEnemies();
+        private void FixedUpdate()
+        {
+            if (CurrentTarget.HasValue && CurrentTarget.Value.Target == null) CurrentTarget = null;
+
+            checkEnemies();
+        }
 
         private void checkEnemies()
         {
@@ -74,22 +82,21 @@ namespace Assets.Scripts.Creatures
                 seenEnemies.Clear();
                 for (int i = 0; i < seenCreaturesCount; i++)
                     if (seenColliders[i] != null && seenColliders[i].TryGetComponent(out Creature creature) && creature.Player != Creature.Player)
-                        seenEnemies.Add(new Tuple<Creature, Collider>(creature, seenColliders[i]));
+                        seenEnemies.Add(new CreatureTarget()
+                        {
+                            Target = creature,
+                            TargetRigidbody = creature.GetComponent<Rigidbody>(),
+                            TargetCollider = seenColliders[i],
+                            NormalisedDistance = Vector3.Distance(eyeOrigin.position, seenColliders[i].ClosestPoint(eyeOrigin.position)) / SightRange,
+                            NormalisedHealth = creature.Health / maxHealth
+                        });
 
                 // Sort the enemies based on the score using the mutated filters.
                 seenEnemies.Sort((firstEnemy, secondEnemy) =>
                 {
-                    // Start by adding the health
-                    float firstScore = (firstEnemy.Item1.Health / maxHealth) * HealthWeight;
-                    float secondScore = (secondEnemy.Item1.Health / maxHealth) * HealthWeight;
-
-                    // Add the normalised distance score to the enemy scores.
-                    firstScore += (Vector3.Distance(eyeOrigin.position, firstEnemy.Item2.ClosestPoint(eyeOrigin.position)) / SightRange) * DistanceWeight;
-                    secondScore += (Vector3.Distance(eyeOrigin.position, secondEnemy.Item2.ClosestPoint(eyeOrigin.position)) / SightRange) * DistanceWeight;
-
-                    // Normalise the scores using an activation function.
-                    firstScore = (float)Math.Tanh(Bias + firstScore);
-                    secondScore = (float)Math.Tanh(Bias + secondScore);
+                    // Calculate the scores for both enemies.
+                    float firstScore = (float)Math.Tanh(Bias + firstEnemy.NormalisedHealth * HealthWeight + firstEnemy.NormalisedDistance * DistanceWeight);
+                    float secondScore = (float)Math.Tanh(Bias + secondEnemy.NormalisedHealth * HealthWeight + secondEnemy.NormalisedDistance * DistanceWeight);
 
                     // Return the result of the compare function.
                     return firstScore.CompareTo(secondScore);
@@ -99,7 +106,7 @@ namespace Assets.Scripts.Creatures
                 maxConcurrentSeenCreatures = (uint)Math.Max(maxConcurrentSeenCreatures, seenEnemies.Count);
 
                 // If enemies were seen, take the last one (the one with the highest score) and set the current target to it, otherwise set the current target to null.
-                CurrentTarget = (seenEnemies.Count > 0) ? seenEnemies[seenEnemies.Count - 1].Item1 : null;
+                CurrentTarget = (seenEnemies.Count > 0) ? seenEnemies[seenEnemies.Count - 1] : (CreatureTarget?)null;
 
                 // Reset the timer.
                 timeSinceLastSightCheck = 0;

@@ -20,7 +20,7 @@ namespace Assets.Scripts.Creatures
 
         private MovementBehaviour movementBehaviour = null;
 
-        private uint kills = 0;
+        private uint enemyKills = 0;
 
         private float damageDealt = 0;
         #endregion
@@ -49,7 +49,7 @@ namespace Assets.Scripts.Creatures
         #region Stat Functions
         protected override void populateLifetimeStats(Seed seed)
         {
-            seed.LifetimeStats.Add("Kills", kills);
+            seed.LifetimeStats.Add("EnemyKills", enemyKills);
             seed.LifetimeStats.Add("DamageDealt", damageDealt);
         }
         #endregion
@@ -63,13 +63,15 @@ namespace Assets.Scripts.Creatures
         private void handleAttackLogic()
         {
             // If the creature has a target, attempt to move towards it.
-            if (targetingBehaviour.CurrentTarget != null)
+            if (targetingBehaviour.HasCurrentTarget)
             {
+                CreatureTarget creatureTarget = targetingBehaviour.CurrentTarget.Value;
+
                 // If the target is out of range, move towards it.
-                if (Vector3.Distance(targetingBehaviour.CurrentTarget.transform.position, transform.position) > Range)
+                if (Vector3.Distance(creatureTarget.Transform.position, transform.position) > Range)
                 {
                     movementBehaviour.StoppingDistance = Range;
-                    movementBehaviour.SetTarget(targetingBehaviour.CurrentTarget.transform);
+                    movementBehaviour.SetTarget(creatureTarget.Transform);
                 }
                 // Otherwise; attempt to attack the target.
                 else
@@ -77,19 +79,20 @@ namespace Assets.Scripts.Creatures
                     // Stop moving.
                     movementBehaviour.StopMoving();
 
-                    transform.rotation.SetLookRotation((targetingBehaviour.CurrentTarget.transform.position - transform.position).normalized);
+                    // Face the target.
+                    transform.LookAt(creatureTarget.Transform);
 
                     // If it has been long enough since the last attack, attack again.
-                    if (timeSinceLastAttack >= AttackInterval && targetingBehaviour.CurrentTarget.IsAlive)
+                    if (timeSinceLastAttack >= AttackInterval && creatureTarget.Target.IsAlive)
                     {
                         // Deal the damage to the target.
-                        targetingBehaviour.CurrentTarget.Health -= Damage;
+                        creatureTarget.Target.Health -= Damage;
 
                         // Add the dealt damage to the stat.
                         damageDealt += Damage;
 
                         // If the target is now dead, increment the kill counter.
-                        if (!targetingBehaviour.CurrentTarget.IsAlive) kills++;
+                        if (!creatureTarget.Target.IsAlive) enemyKills++;
 
                         // Invoke the attack event.
                         onAttack.Invoke();

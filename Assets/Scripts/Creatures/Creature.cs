@@ -57,6 +57,9 @@ namespace Assets.Scripts.Creatures
         /// <summary> The object that the creature is trying to reach. </summary>
         public Transform GoalObject { get; private set; }
 
+        /// <summary> The object into which the projectiles are instantiated. </summary>
+        public Transform ProjectileContainer { get; private set; }
+
         /// <summary> The player who owns this creature. </summary>
         public BasePlayer Player => creatureManager.Player;
         #endregion
@@ -69,12 +72,13 @@ namespace Assets.Scripts.Creatures
         /// <param name="creatureManager"> The manager that spawned this creature. </param>
         /// <param name="seed"> The seed from which this creature was made. </param>
         /// <param name="goalObject"> The object that the creature wishes to reach. </param>
-        public void InitialiseFromStats(CreatureManager creatureManager, Seed seed, Transform goalObject)
+        public void InitialiseFromStats(CreatureManager creatureManager, Seed seed, Transform goalObject, Transform projectileContainer)
         {
             // Set fields and properties.
             this.creatureManager = creatureManager;
-            this.Seed = seed;
+            Seed = seed;
             GoalObject = goalObject;
+            ProjectileContainer = projectileContainer;
 
             // Add the behaviours.
             findBehaviours();

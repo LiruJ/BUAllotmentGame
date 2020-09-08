@@ -1,5 +1,7 @@
-﻿using Assets.Scripts.Crops;
+﻿using Assets.Scripts.Creatures;
+using Assets.Scripts.Crops;
 using Assets.Scripts.Seeds;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Player
@@ -13,6 +15,9 @@ namespace Assets.Scripts.Player
 
         [SerializeField]
         private int asparagusZ = 0;
+
+        [SerializeField]
+        private CreatureManager enemyCreatureManager = null;
         #endregion
 
         #region Fields
@@ -43,14 +48,16 @@ namespace Assets.Scripts.Player
             tomatoSeeds.ScoreFilter.Add("AliveTime", 0.5f);
             tomatoSeeds.ScoreFilter.Add("MaxConcurrentSeenCreatures", 1);
             tomatoSeeds.ScoreFilter.Add("DamageDealt", 10);
-            tomatoSeeds.ScoreFilter.Add("Kills", 10);
+            tomatoSeeds.ScoreFilter.Add("EnemyKills", 10);
+            tomatoSeeds.ScoreFilter.Add("FriendlyKills", -10);
 
             SeedGeneration asparagusSeeds = SeedManager.GetLatestGenerationOfCropType("Asparagus");
             asparagusSeeds.ScoreFilter.Add("DistanceFromGoal", -2);
             asparagusSeeds.ScoreFilter.Add("AliveTime", 0.5f);
             asparagusSeeds.ScoreFilter.Add("MaxConcurrentSeenCreatures", 1);
             asparagusSeeds.ScoreFilter.Add("DamageDealt", 10);
-            asparagusSeeds.ScoreFilter.Add("Kills", 10);
+            asparagusSeeds.ScoreFilter.Add("EnemyKills", 10);
+            asparagusSeeds.ScoreFilter.Add("FriendlyKills", -10);
         }
 
         private void plantCrops()
@@ -71,6 +78,13 @@ namespace Assets.Scripts.Player
         public void OnCropTick()
         {
             if (!hasPlantedFirst) { plantCrops(); hasPlantedFirst = true; }
+        }
+        #endregion
+
+        #region Update Functions
+        private void FixedUpdate()
+        {
+            if (Mathf.FloorToInt(Time.time) % 15 == 0 && CreatureManager.Count == 0 && enemyCreatureManager.Count == 0) plantCrops();
         }
         #endregion
     }

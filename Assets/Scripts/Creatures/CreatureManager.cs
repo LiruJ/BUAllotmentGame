@@ -23,6 +23,10 @@ namespace Assets.Scripts.Creatures
         [Tooltip("The object into which the creatures are instantiated.")]
         [SerializeField]
         private Transform creatureContainer = null;
+
+        [Tooltip("The object into which the projectiles are instantiated.")]
+        [SerializeField]
+        private Transform projectileContainer = null;
         #endregion
 
         #region Fields
@@ -32,6 +36,8 @@ namespace Assets.Scripts.Creatures
         #region Properties
         /// <summary> The player who owns this creature manager. </summary>
         public BasePlayer Player => player;
+
+        public int Count => creaturesByInstanceID.Count;
         #endregion
 
         #region Events
@@ -60,7 +66,7 @@ namespace Assets.Scripts.Creatures
             creaturesByInstanceID.Add(creatureInstance.GetInstanceID(), creatureScript);
 
             // Intitialise the stats of the creature based on the given seed.
-            creatureScript.InitialiseFromStats(this, seed, goalObject);
+            creatureScript.InitialiseFromStats(this, seed, goalObject, projectileContainer);
         }
 
         public void CreatureDied(Creature creature)
