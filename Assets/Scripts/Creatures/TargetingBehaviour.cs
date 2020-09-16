@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Seeds;
+﻿using Assets.Scripts.BUCore.Maths;
+using Assets.Scripts.Seeds;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,11 +17,6 @@ namespace Assets.Scripts.Creatures
         [Range(100, 10000)]
         [Tooltip("The max health, used for normalising.")]
         private float maxHealth = 10000;
-
-        [Range(0.1f, 10)]
-        [Tooltip("The amount of time in seconds between each sight update.")]
-        [SerializeField]
-        private float timeBetweenSightChecks;
         #endregion
 
         #region Fields
@@ -28,13 +24,13 @@ namespace Assets.Scripts.Creatures
 
         private float timeSinceLastSightCheck = 0.0f;
 
-        private readonly Collider[] seenColliders = new Collider[25];
+        private Collider[] seenColliders = new Collider[40];
 
         private readonly List<CreatureTarget> seenEnemies = new List<CreatureTarget>();
         #endregion
 
         #region Properties
-        public float TimeBetweenSightChecks { get => timeBetweenSightChecks; set => timeBetweenSightChecks = value; }
+        public float TimeBetweenSightChecks { get; set; }
 
         /// <summary> How many units around its centre this creature can see. </summary>
         public float SightRange { get; set; }
@@ -87,8 +83,8 @@ namespace Assets.Scripts.Creatures
                             Target = creature,
                             TargetRigidbody = creature.GetComponent<Rigidbody>(),
                             TargetCollider = seenColliders[i],
-                            NormalisedDistance = Vector3.Distance(eyeOrigin.position, seenColliders[i].ClosestPoint(eyeOrigin.position)) / SightRange,
-                            NormalisedHealth = creature.Health / maxHealth
+                            NormalisedDistance = NeuralNetworkHelper.ExpandRangeToNegative(Vector3.Distance(eyeOrigin.position, seenColliders[i].ClosestPoint(eyeOrigin.position)) / SightRange),
+                            NormalisedHealth = NeuralNetworkHelper.ExpandRangeToNegative(creature.Health / maxHealth)
                         });
 
                 // Sort the enemies based on the score using the mutated filters.
@@ -107,6 +103,8 @@ namespace Assets.Scripts.Creatures
 
                 // If enemies were seen, take the last one (the one with the highest score) and set the current target to it, otherwise set the current target to null.
                 CurrentTarget = (seenEnemies.Count > 0) ? seenEnemies[seenEnemies.Count - 1] : (CreatureTarget?)null;
+
+                if (seenCreaturesCount == seenColliders.Length) Array.Resize(ref seenColliders, seenColliders.Length + 10);
 
                 // Reset the timer.
                 timeSinceLastSightCheck = 0;

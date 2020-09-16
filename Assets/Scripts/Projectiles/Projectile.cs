@@ -22,7 +22,15 @@ namespace Assets.Scripts.Projectiles
         #endregion
 
         #region Fields
-        private Action<float, Creature> callback;
+        private Action<ProjectileHitInfo> callback;
+
+        private Creature owner;
+
+        private Vector3 originPosition;
+
+        private Creature targetCreature;
+
+        private Vector3 targetPosition;
         #endregion
 
         #region Properties
@@ -38,9 +46,13 @@ namespace Assets.Scripts.Projectiles
         #endregion
 
         #region Initialisation Functions
-        public void InitialiseProjectile(Action<float, Creature> callback)
+        public void InitialiseProjectile(Action<ProjectileHitInfo> callback, Creature owner, Creature targetCreature, Vector3 targetPosition, Vector3 originPosition)
         {
             this.callback = callback;
+            this.owner = owner;
+            this.originPosition = originPosition;
+            this.targetCreature = targetCreature;
+            this.targetPosition = targetPosition;
         }
         #endregion
 
@@ -54,13 +66,10 @@ namespace Assets.Scripts.Projectiles
         {
             if (transform.position.y < destroyLevel) Destroy(gameObject);
 
-            float rayLength = Rigidbody.velocity.magnitude * Time.fixedDeltaTime;
-
-            Debug.DrawLine(tip.position, tip.position + (tip.forward * rayLength), Color.red, 10);
-            if (Physics.Raycast(new Ray(tip.position, tip.forward), out RaycastHit hitInfo, rayLength, LayerMask.GetMask("Terrain", "Creatures")))
+            if (Physics.Raycast(new Ray(tip.position, Rigidbody.velocity.normalized), out RaycastHit hitInfo, Rigidbody.velocity.magnitude * Time.fixedDeltaTime * 2, LayerMask.GetMask("Terrain", "Creatures")))
             {
-                // Invoke the callback event.
-                callback(projectileRigidbody.velocity.magnitude, hitInfo.collider.gameObject.GetComponent<Creature>());
+                // If the hit object is a creature, check to see if it's the creature who threw the projectile. If it is, do nothing.
+                if (hitInfo.collider.TryGetComponent(out Creature hitCreature) && hitCreature == owner) return;
 
                 // Move the spear to the hit position.
                 transform.position = hitInfo.point;
@@ -70,7 +79,7 @@ namespace Assets.Scripts.Projectiles
                 {
                     FixedJoint joint = gameObject.AddComponent<FixedJoint>();
                     joint.connectedBody = hitInfo.rigidbody;
-
+                    
                     // Invoke the hit event.
                     onHitCreature.Invoke();
                 }
@@ -83,11 +92,27 @@ namespace Assets.Scripts.Projectiles
                     projectileRigidbody.constraints = RigidbodyConstraints.FreezePosition;
                 }
 
+                // Keep track of the speed of the projectile before it gets stuck.
+                float speed = projectileRigidbody.velocity.magnitude;
+
                 // Kill the speed and stop being affected by gravity.
                 projectileRigidbody.velocity = Vector3.zero;
                 projectileRigidbody.useGravity = false;
 
+                // Create the hit info.
+                ProjectileHitInfo projectileHitInfo = new ProjectileHitInfo()
+                {
+                    Speed = speed,
+                    OriginPosition = originPosition,
+                    TargetPosition = targetPosition,
+                    HitPosition = hitInfo.point,
+                    TargetCreature = targetCreature,
+                    HitCreature = hitCreature,
+                    HitCollder = hitInfo.collider
+                };
 
+                // Invoke the callback event.
+                callback(projectileHitInfo);
 
                 // Disable this script.
                 enabled = false;

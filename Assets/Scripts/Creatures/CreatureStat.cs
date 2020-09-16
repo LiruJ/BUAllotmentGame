@@ -23,6 +23,11 @@ namespace Assets.Scripts.Creatures
         [SerializeField]
         private float mutationChance = 0.1f;
 
+        [Range(0, 1)]
+        [Tooltip("The percentage chance for this stat's sign (negative/positive) to flip.")]
+        [SerializeField]
+        private float signFlipChance = 0f;
+
         [Range(0.01f, 10)]
         [Tooltip("The max/min amount added to or removed from the stat value when mutated.")]
         [SerializeField]
@@ -37,6 +42,11 @@ namespace Assets.Scripts.Creatures
         [Tooltip("The value that the stat will initialise to.")]
         [SerializeField]
         private float startingValue = 0;
+
+        [Range(-10000, 10000)]
+        [Tooltip("The value that will be added to or subtracted from the starting value.")]
+        [SerializeField]
+        private float startingRange = 0;
 
         [SerializeField]
         private List<StatSideEffect> sideEffects = new List<StatSideEffect>();
@@ -92,9 +102,12 @@ namespace Assets.Scripts.Creatures
                 newValue = stat;
 
                 // Roll for mutation.
-                if (UnityEngine.Random.value >= mutationChance) newValue += UnityEngine.Random.Range(-mutationStrength, mutationStrength);
+                if (UnityEngine.Random.value < mutationChance) newValue += UnityEngine.Random.Range(-mutationStrength, mutationStrength);
             }
-            else newValue = startingValue + UnityEngine.Random.Range(-mutationStrength, mutationStrength);
+            else newValue = startingValue + UnityEngine.Random.Range(-startingRange, startingRange);
+
+            // Roll to flip the sign.
+            if (UnityEngine.Random.value < signFlipChance) newValue *= -1;
 
             // Set the main stat value, invoking the event.
             Value = newValue;

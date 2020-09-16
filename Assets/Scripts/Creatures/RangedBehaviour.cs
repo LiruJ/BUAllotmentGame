@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Projectiles;
+﻿using Assets.Scripts.BUCore.Maths;
+using Assets.Scripts.Projectiles;
 using Assets.Scripts.Seeds;
 using System;
 using UnityEngine;
@@ -25,12 +26,24 @@ namespace Assets.Scripts.Creatures
         private TargetingBehaviour targetingBehaviour = null;
 
         private MovementBehaviour movementBehaviour = null;
+        #endregion
 
+        #region Lifetime Stats
         private uint enemyKills = 0;
 
         private uint friendlyKills = 0;
 
-        private float damageDealt = 0;
+        private float enemyDamageDealt = 0;
+
+        private float friendlyDamageDealt = 0;
+
+        private float closestHit = 10000;
+
+        private float bestAngle = -1;
+
+        private uint thrownShots = 0;
+
+        private uint collidedShots = 0;
         #endregion
 
         #region Properties
@@ -84,7 +97,11 @@ namespace Assets.Scripts.Creatures
         {
             seed.LifetimeStats.Add("EnemyKills", enemyKills);
             seed.LifetimeStats.Add("FriendlyKills", friendlyKills);
-            seed.LifetimeStats.Add("DamageDealt", damageDealt);
+            seed.LifetimeStats.Add("EnemyDamageDealt", enemyDamageDealt);
+            seed.LifetimeStats.Add("FriendlyDamageDealt", friendlyDamageDealt);
+            seed.LifetimeStats.Add("ClosestHit", closestHit);
+            seed.LifetimeStats.Add("BestAngle", bestAngle);
+            seed.LifetimeStats.Add("OffMap", thrownShots - collidedShots);
         }
         #endregion
 
@@ -101,6 +118,9 @@ namespace Assets.Scripts.Creatures
 
         private void handleAttackLogic()
         {
+            // Add the elapsed time to the attack timer.
+            timeSinceLastAttack += Time.fixedDeltaTime;
+
             // If the creature has a target, attempt to move towards it.
             if (targetingBehaviour.HasCurrentTarget)
             {
@@ -116,32 +136,42 @@ namespace Assets.Scripts.Creatures
                 if (timeSinceLastAttack >= AttackInterval && creatureTarget.Target.IsAlive)
                 {
                     // Calculate the power of the throw.
-                    float power = (float)Math.Tanh(PowerBias + (creatureTarget.NormalisedHealth * PowerHealthWeight) + (creatureTarget.NormalisedDistance * PowerDistanceWeight));
+                    float power = (float)Math.Tanh(PowerBias + creatureTarget.NormalisedHealth * PowerHealthWeight + creatureTarget.NormalisedDistance * PowerDistanceWeight);
 
-                    // Only throw if the power is over 0, otherwise do nothing.
-                    if (power > 0)
-                    {
-                        // Calculate the pitch of the throw.
-                        float pitch = (float)Math.Tanh(PitchBias + (creatureTarget.NormalisedDistance * PitchDistanceWeight) + (creatureTarget.TargetRigidbody.velocity.magnitude * PitchSpeedWeight) + (power * PitchPowerWeight));
+                    // Calculate the pitch of the throw.
+                    float pitch = Mathf.Clamp(PitchBias + creatureTarget.NormalisedDistance * PitchDistanceWeight + NeuralNetworkHelper.ExpandRangeToNegative(creatureTarget.TargetRigidbody.velocity.magnitude / 1000) * PitchSpeedWeight
+                        + power * PitchPowerWeight, -1, 1);
 
-                        // Calculate the yaw of the throw.
-                        float yaw = (float)Math.Tanh(YawBias + ((creatureTarget.Transform.position - transform.position).normalized.y * YawAngleWeight) + (creatureTarget.NormalisedDistance * YawDistanceWeight)
-                            + (power * YawPowerWeight) + (creatureTarget.TargetRigidbody.velocity.magnitude * YawSpeedWeight));
+                    // Calcualte the normalised direction to the target, then the angles (in degrees) from that.
+                    Quaternion rotationToTarget = Quaternion.LookRotation((creatureTarget.Transform.position - transform.position).normalized);
 
-                        // Create a new spear.
-                        GameObject spearObject = Instantiate(projectilePrefab.gameObject, heldWeapon.position + (new Vector3(pitch, yaw, 0) * 0.02f), Quaternion.LookRotation(new Vector3(pitch, yaw, 0)), Creature.ProjectileContainer);
+                    // Calculate the yaw of the throw.
+                    float z = YawBias + creatureTarget.NormalisedDistance * YawDistanceWeight + power * YawPowerWeight 
+                        + NeuralNetworkHelper.ExpandRangeToNegative(creatureTarget.TargetRigidbody.velocity.magnitude / 1000) * YawSpeedWeight;
+                    float yaw = Mathf.Clamp(z, -1, 1);
 
-                        //spearObject.transform.position = heldWeapon.position;
-                        spearObject.transform.localScale = Vector3.Scale(heldWeapon.localScale, transform.localScale);
+                    Vector3 changedDirection = rotationToTarget.eulerAngles;
+                    changedDirection.y += yaw * 180;
+                    changedDirection.x += pitch * 180;
 
-                        // Get the projectile component from the created spear.
-                        Projectile spearProjectile = spearObject.GetComponent<Projectile>();
+                    // Create a new spear.
+                    GameObject spearObject = Instantiate(projectilePrefab.gameObject, heldWeapon.position, Quaternion.Euler(changedDirection), Creature.ProjectileContainer);
 
-                        spearProjectile.InitialiseProjectile(onProjectileHitEnemy);
+                    Debug.DrawRay(heldWeapon.position, spearObject.transform.forward, Color.red, 10);
 
-                        // Add the force to the spear.
-                        spearProjectile.Rigidbody.AddForce(spearObject.transform.forward * power * MaxPower, ForceMode.Impulse);
-                    }
+                    //spearObject.transform.position = heldWeapon.position;
+                    spearObject.transform.localScale = Vector3.Scale(heldWeapon.localScale, transform.localScale);
+
+                    // Get the projectile component from the created spear.
+                    Projectile spearProjectile = spearObject.GetComponent<Projectile>();
+
+                    spearProjectile.InitialiseProjectile(onProjectileHitEnemy, Creature, creatureTarget.Target, creatureTarget.Transform.position, spearObject.transform.position);
+
+                    // Add the force to the spear.
+                    spearProjectile.Rigidbody.AddForce(spearObject.transform.forward * (power + 1) * MaxPower, ForceMode.Impulse);
+
+                    // Increment the thrown shots counter.
+                    thrownShots++;
 
                     // Reset the attack timer.
                     timeSinceLastAttack = 0;
@@ -153,24 +183,45 @@ namespace Assets.Scripts.Creatures
                 movementBehaviour.SetTarget(Creature.GoalObject);
                 movementBehaviour.StoppingDistance = 0;
             }
-
-            // Add the elapsed time to the attack timer.
-            timeSinceLastAttack += Time.fixedDeltaTime;
         }
 
-        private void onProjectileHitEnemy(float speed, Creature hitCreature)
+        private void onProjectileHitEnemy(ProjectileHitInfo projectileHitInfo)
         {
-            if (hitCreature == null || !hitCreature.IsAlive) return;
-
-            hitCreature.Health -= speed * 10;
-            damageDealt += speed * 10;
-
-            // If the creature is now dead, track the kill.
-            if (!hitCreature.IsAlive)
+            // If a creature was hit, damage it
+            if (projectileHitInfo.HitCreature != null && projectileHitInfo.HitCreature.IsAlive)
             {
-                if (hitCreature.Player == Creature.Player) friendlyKills++;
-                else enemyKills++;
+                float finalDamage = projectileHitInfo.Speed * 10;
+                projectileHitInfo.HitCreature.Health -= finalDamage;
+
+                // Keep track of the dealt damage.
+                if (projectileHitInfo.HitCreature.Player == Creature.Player) friendlyDamageDealt += finalDamage;
+                else enemyDamageDealt += finalDamage;
+
+                // If the creature is now dead, track the kill.
+                if (!projectileHitInfo.HitCreature.IsAlive)
+                {
+                    if (projectileHitInfo.HitCreature.Player == Creature.Player) friendlyKills++;
+                    else enemyKills++;
+                }
             }
+
+            // If this hit was closer than the previous hit, keep track of it.
+            Vector3 targetPosition = (projectileHitInfo.TargetCreature != null) ? projectileHitInfo.TargetCreature.transform.position : projectileHitInfo.TargetPosition;
+            float distanceFromTarget = Vector3.Distance(projectileHitInfo.HitPosition, targetPosition);
+            if (distanceFromTarget < closestHit) closestHit = distanceFromTarget;
+
+            // Calculate the angle between the origin of the throw and the hit location, as well as the angle between the origin and the target.
+            Vector2 originHitDirection = (new Vector2(projectileHitInfo.HitPosition.x, projectileHitInfo.HitPosition.z) - new Vector2(projectileHitInfo.OriginPosition.x, projectileHitInfo.OriginPosition.z)).normalized;
+            Vector2 originTargetDirection = (new Vector2(targetPosition.x, targetPosition.z) - new Vector2(projectileHitInfo.OriginPosition.x, projectileHitInfo.OriginPosition.z)).normalized;
+            Debug.DrawLine(projectileHitInfo.OriginPosition, projectileHitInfo.HitPosition, Color.green, 10);
+            Debug.DrawLine(projectileHitInfo.OriginPosition, targetPosition, Color.blue, 10);
+
+            // Calculate the dot product between the desired throw and the actual throw. If this value is higher than the current best, set the current best to it.
+            float dotProduct = Vector2.Dot(originHitDirection, originTargetDirection);
+            if (dotProduct > bestAngle) bestAngle = dotProduct;
+
+            // Increment the collided shots counter, as the shot hit something.
+            collidedShots++;
         }
         #endregion
     }

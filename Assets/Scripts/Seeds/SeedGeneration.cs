@@ -11,6 +11,9 @@ namespace Assets.Scripts.Seeds
         /// <summary> The collection of seeds. </summary>
         private readonly List<Seed> seeds = new List<Seed>();
 
+        /// <summary> Stores the best and worst scores of every seed in this generation, keyed by stat name. </summary>
+        private readonly Dictionary<string, BestWorst> bestWorstScoresByStatName = new Dictionary<string, BestWorst>();
+
         /// <summary> Is true if the seeds collection has been changed since the last time it was accessed, false otherwise. </summary>
         private bool needsSorting = true;
         #endregion
@@ -56,8 +59,17 @@ namespace Assets.Scripts.Seeds
             // If the seeds need to be sorted, sort them.
             if (needsSorting) Sort();
 
-            // Return the best seed, or null if none exist.
-            return Count > 0 ? seeds[seeds.Count - 1] : null;
+            if (Count == 0) return null;
+
+            // Generate a random number between 0.5 and 1 (technically 0.9985), weighted more towards 1.
+            // This uses a modified sigmoid curve and essentially gives some sense of genetic diversity by still giving the not-quite-best seeds a chance to be selected. 
+            float random = 1 / (1 + Mathf.Pow((float)Math.E, -4f * UnityEngine.Random.value));
+
+            // Convert the random number to an index.
+            int index = Mathf.FloorToInt(random * Count);
+
+            // Return the seed at the calculated index.
+            return seeds[index];
         }
 
         /// <summary> Adds the given <paramref name="seed"/> to the generation. </summary>
@@ -77,6 +89,23 @@ namespace Assets.Scripts.Seeds
 
             // Add the seed to the list.
             seeds.Add(seed);
+
+            // Go over each lifetime stat of the seed.
+            foreach (KeyValuePair<string, float> statNameValue in seed.LifetimeStats)
+            {
+                // If the best/worst collection does not contain this stat, add the stat's value as the best and worst.
+                if (!bestWorstScoresByStatName.TryGetValue(statNameValue.Key, out BestWorst bestWorst))
+                {
+                    bestWorst = new BestWorst(statNameValue.Value);
+                    bestWorstScoresByStatName.Add(statNameValue.Key, bestWorst);
+                }
+                // Otherwise; only change the best/worst if the value of this stat is the best or worst.
+                else
+                {
+                    if (statNameValue.Value > bestWorst.Best) bestWorst.Best = statNameValue.Value;
+                    if (statNameValue.Value < bestWorst.Worst) bestWorst.Worst = statNameValue.Value;
+                }
+            }
         }
 
         /// <summary> Removes the given <paramref name="seed"/> from this generation. </summary>
@@ -93,7 +122,7 @@ namespace Assets.Scripts.Seeds
             if (!needsSorting) return;
 
             // Sort the seeds using the filter.
-            seeds.Sort((first, second) => first.CalculateScore(ScoreFilter).CompareTo(second.CalculateScore(ScoreFilter)));
+            seeds.Sort((first, second) => first.CalculateScore(ScoreFilter, bestWorstScoresByStatName).CompareTo(second.CalculateScore(ScoreFilter, bestWorstScoresByStatName)));
 
             // Now that sorting is done, set the flag to false.
             needsSorting = false;

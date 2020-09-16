@@ -225,10 +225,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthStat:
     statName: MaxHealth
-    mutationChance: 0.05
+    mutationChance: 0.2
+    signFlipChance: 0
     mutationStrength: 2.5
     minimum: 0
     startingValue: 20
+    startingRange: 0
     sideEffects:
     - name: Mass
       multiplier: 0.1
@@ -298,10 +300,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureStats:
   - statName: MaxSpeed
-    mutationChance: 0.1
-    mutationStrength: 0.25
+    mutationChance: 0.4
+    signFlipChance: 0
+    mutationStrength: 0.05
     minimum: 0.1
-    startingValue: 1
+    startingValue: 1.5
+    startingRange: 1
     sideEffects:
     - name: Drag
       multiplier: 2
@@ -338,10 +342,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: Acceleration
-    mutationChance: 0.1
-    mutationStrength: 0.25
+    mutationChance: 0.05
+    signFlipChance: 0
+    mutationStrength: 0.125
     minimum: 0.1
     startingValue: 1
+    startingRange: 0.5
     sideEffects:
     - name: Burnt Energy
       multiplier: 2.5
@@ -394,9 +400,11 @@ MonoBehaviour:
   creatureStats:
   - statName: HealthWeight
     mutationChance: 0.1
-    mutationStrength: 1
+    signFlipChance: 0.01
+    mutationStrength: 0.01
     minimum: -1000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -414,9 +422,11 @@ MonoBehaviour:
           m_CallState: 2
   - statName: SightRange
     mutationChance: 0.05
-    mutationStrength: 0.5
+    signFlipChance: 0
+    mutationStrength: 1
     minimum: 0
-    startingValue: 2
+    startingValue: 5
+    startingRange: 2.5
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -433,10 +443,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: Bias
-    mutationChance: 0.2
-    mutationStrength: 0.25
+    mutationChance: 0.1
+    signFlipChance: 0.01
+    mutationStrength: 1
     minimum: -1000
     startingValue: 0
+    startingRange: 2
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -454,9 +466,11 @@ MonoBehaviour:
           m_CallState: 2
   - statName: CheckInterval
     mutationChance: 0.1
+    signFlipChance: 0
     mutationStrength: 0.05
     minimum: 0.1
     startingValue: 0.2
+    startingRange: 0.1
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -474,9 +488,11 @@ MonoBehaviour:
           m_CallState: 2
   - statName: DistanceWeight
     mutationChance: 0.1
-    mutationStrength: 1
+    signFlipChance: 0.01
+    mutationStrength: 0.01
     minimum: -1000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -493,7 +509,6 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   eyeOrigin: {fileID: 5138160559395233641}
-  timeBetweenSightChecks: 0
 --- !u!114 &-5340554717337402429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -509,9 +524,11 @@ MonoBehaviour:
   creatureStats:
   - statName: AttackRange
     mutationChance: 0.05
+    signFlipChance: 0
     mutationStrength: 0.1
     minimum: 0.1
     startingValue: 1
+    startingRange: 1
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -529,9 +546,11 @@ MonoBehaviour:
           m_CallState: 2
   - statName: MeleeDamage
     mutationChance: 0.3
+    signFlipChance: 0
     mutationStrength: 0.1
     minimum: 0
     startingValue: 5
+    startingRange: 5
     sideEffects:
     - name: Weapon Size
       multiplier: 0.2
@@ -569,9 +588,11 @@ MonoBehaviour:
           m_CallState: 2
   - statName: MeleeRate
     mutationChance: 0.2
+    signFlipChance: 0
     mutationStrength: 0.01
     minimum: 0.5
     startingValue: 1
+    startingRange: 0.05
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -799,17 +820,17 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: f37311c279f41134ca6c03c5ffcebfaa,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0019
+      value: -0.0008
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: f37311c279f41134ca6c03c5ffcebfaa,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.2975
+      value: -0.0043
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: f37311c279f41134ca6c03c5ffcebfaa,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.0878
+      value: 0.0014
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: f37311c279f41134ca6c03c5ffcebfaa,
         type: 3}

@@ -22,7 +22,7 @@ namespace Assets.Scripts.Creatures
 
         private uint enemyKills = 0;
 
-        private float damageDealt = 0;
+        private float enemyDamageDealt = 0;
         #endregion
 
         #region Properties
@@ -50,7 +50,7 @@ namespace Assets.Scripts.Creatures
         protected override void populateLifetimeStats(Seed seed)
         {
             seed.LifetimeStats.Add("EnemyKills", enemyKills);
-            seed.LifetimeStats.Add("DamageDealt", damageDealt);
+            seed.LifetimeStats.Add("EnemyDamageDealt", enemyDamageDealt);
         }
         #endregion
 
@@ -89,7 +89,7 @@ namespace Assets.Scripts.Creatures
                         creatureTarget.Target.Health -= Damage;
 
                         // Add the dealt damage to the stat.
-                        damageDealt += Damage;
+                        enemyDamageDealt += Damage;
 
                         // If the target is now dead, increment the kill counter.
                         if (!creatureTarget.Target.IsAlive) enemyKills++;

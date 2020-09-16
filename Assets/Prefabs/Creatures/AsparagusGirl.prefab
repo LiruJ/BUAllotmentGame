@@ -247,7 +247,7 @@ Rigidbody:
   m_GameObject: {fileID: 8641952391395494159}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 4.2578387
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -264,8 +264,8 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.125
-  m_Speed: 3.5
-  m_Acceleration: 8
+  m_Speed: 2.1289194
+  m_Acceleration: 0.5282861
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -316,10 +316,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthStat:
     statName: MaxHealth
-    mutationChance: 0.05
+    mutationChance: 0.2
+    signFlipChance: 0
     mutationStrength: 2.5
     minimum: 0
-    startingValue: 7.5
+    startingValue: 20
+    startingRange: 2.5
     sideEffects:
     - name: Mass
       multiplier: 0.1
@@ -390,9 +392,11 @@ MonoBehaviour:
   creatureStats:
   - statName: MaxSpeed
     mutationChance: 0.1
-    mutationStrength: 0.25
+    signFlipChance: 0
+    mutationStrength: 0.2
     minimum: 0.1
     startingValue: 1
+    startingRange: 0.5
     sideEffects:
     - name: Drag
       multiplier: 2
@@ -430,9 +434,11 @@ MonoBehaviour:
           m_CallState: 2
   - statName: Acceleration
     mutationChance: 0.05
+    signFlipChance: 0
     mutationStrength: 0.125
     minimum: 0.1
     startingValue: 0.5
+    startingRange: 0.2
     sideEffects:
     - name: Burnt Energy
       multiplier: 2.5
@@ -485,9 +491,11 @@ MonoBehaviour:
   creatureStats:
   - statName: HealthWeight
     mutationChance: 0.1
-    mutationStrength: 1
+    signFlipChance: 0.01
+    mutationStrength: 0.01
     minimum: -1000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -504,10 +512,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: SightRange
-    mutationChance: 0.2
+    mutationChance: 0.05
+    signFlipChance: 0
     mutationStrength: 1
     minimum: 0
     startingValue: 15
+    startingRange: 5
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -524,10 +534,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: Bias
-    mutationChance: 0.2
-    mutationStrength: 0.25
+    mutationChance: 0.1
+    signFlipChance: 0.01
+    mutationStrength: 1
     minimum: -1000
     startingValue: 0
+    startingRange: 2
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -545,9 +557,11 @@ MonoBehaviour:
           m_CallState: 2
   - statName: CheckInterval
     mutationChance: 0.1
+    signFlipChance: 0
     mutationStrength: 0.05
     minimum: 0.1
     startingValue: 0.2
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -565,9 +579,11 @@ MonoBehaviour:
           m_CallState: 2
   - statName: DistanceWeight
     mutationChance: 0.1
-    mutationStrength: 1
+    signFlipChance: 0.01
+    mutationStrength: 0.01
     minimum: -1000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -584,7 +600,6 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   eyeOrigin: {fileID: 152986140969454477}
-  timeBetweenSightChecks: 0
 --- !u!114 &4968430239771915622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -599,10 +614,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureStats:
   - statName: MaxPower
-    mutationChance: 0.05
-    mutationStrength: 1
+    mutationChance: 0.1
+    signFlipChance: 0
+    mutationStrength: 0.05
     minimum: 1
     startingValue: 2
+    startingRange: 1
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -620,9 +637,11 @@ MonoBehaviour:
           m_CallState: 2
   - statName: AttackInterval
     mutationChance: 0.05
+    signFlipChance: 0
     mutationStrength: 0.1
     minimum: 2.5
-    startingValue: 2.5
+    startingValue: 3
+    startingRange: 0.5
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -640,9 +659,11 @@ MonoBehaviour:
           m_CallState: 2
   - statName: PowerBias
     mutationChance: 0.05
+    signFlipChance: 0.01
     mutationStrength: 1
     minimum: -10000
     startingValue: 0
+    startingRange: 2
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -659,10 +680,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: PowerHealthWeight
-    mutationChance: 0.05
-    mutationStrength: 1
+    mutationChance: 0.1
+    signFlipChance: 0.01
+    mutationStrength: 0.01
     minimum: -10000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -679,10 +702,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: PowerDistanceWeight
-    mutationChance: 0.05
-    mutationStrength: 1
+    mutationChance: 0.1
+    signFlipChance: 0.01
+    mutationStrength: 0.01
     minimum: -10000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -700,9 +725,11 @@ MonoBehaviour:
           m_CallState: 2
   - statName: PitchBias
     mutationChance: 0.05
-    mutationStrength: 1
+    signFlipChance: 0.03
+    mutationStrength: 0.1
     minimum: -10000
     startingValue: 0
+    startingRange: 0.05
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -719,10 +746,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: PitchSpeedWeight
-    mutationChance: 0.05
-    mutationStrength: 1
+    mutationChance: 0.1
+    signFlipChance: 0.01
+    mutationStrength: 0.01
     minimum: -10000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -739,10 +768,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: PitchDistanceWeight
-    mutationChance: 0.05
-    mutationStrength: 1
+    mutationChance: 0.1
+    signFlipChance: 0.01
+    mutationStrength: 0.01
     minimum: -10000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -759,10 +790,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: PitchPowerWeight
-    mutationChance: 0.05
-    mutationStrength: 1
+    mutationChance: 0.1
+    signFlipChance: 0.01
+    mutationStrength: 0.01
     minimum: -10000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -779,10 +812,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: YawBias
-    mutationChance: 0.05
+    mutationChance: 0.1
+    signFlipChance: 0.01
     mutationStrength: 0.1
     minimum: -10000
     startingValue: 0
+    startingRange: 0.05
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -799,10 +834,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: YawAngleWeight
-    mutationChance: 0.05
-    mutationStrength: 0.1
+    mutationChance: 0.1
+    signFlipChance: 0.01
+    mutationStrength: 0.01
     minimum: -10000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -819,10 +856,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: YawPowerWeight
-    mutationChance: 0.05
-    mutationStrength: 0.1
+    mutationChance: 0.1
+    signFlipChance: 0
+    mutationStrength: 0.01
     minimum: -10000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -839,10 +878,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: YawSpeedWeight
-    mutationChance: 0.05
-    mutationStrength: 0.1
+    mutationChance: 0.1
+    signFlipChance: 0.01
+    mutationStrength: 0.01
     minimum: -10000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -859,10 +900,12 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: YawDistanceWeight
-    mutationChance: 0.05
-    mutationStrength: 0.1
+    mutationChance: 0.1
+    signFlipChance: 0.01
+    mutationStrength: 0.05
     minimum: -10000
     startingValue: 0
+    startingRange: 0
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:

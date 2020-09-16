@@ -44,20 +44,23 @@ namespace Assets.Scripts.Player
             // Set up the score filter.
             // TODO: Better way of doing this.
             SeedGeneration tomatoSeeds = SeedManager.GetLatestGenerationOfCropType("Tomato");
-            tomatoSeeds.ScoreFilter.Add("DistanceFromGoal", -2);
+            tomatoSeeds.ScoreFilter.Add("DistanceFromGoal", -1);
             tomatoSeeds.ScoreFilter.Add("AliveTime", 0.5f);
-            tomatoSeeds.ScoreFilter.Add("MaxConcurrentSeenCreatures", 1);
-            tomatoSeeds.ScoreFilter.Add("DamageDealt", 10);
-            tomatoSeeds.ScoreFilter.Add("EnemyKills", 10);
-            tomatoSeeds.ScoreFilter.Add("FriendlyKills", -10);
+            tomatoSeeds.ScoreFilter.Add("MaxConcurrentSeenCreatures", 0.1f);
+            tomatoSeeds.ScoreFilter.Add("EnemyDamageDealt", 1.5f);
+            tomatoSeeds.ScoreFilter.Add("EnemyKills", 2);
 
             SeedGeneration asparagusSeeds = SeedManager.GetLatestGenerationOfCropType("Asparagus");
-            asparagusSeeds.ScoreFilter.Add("DistanceFromGoal", -2);
-            asparagusSeeds.ScoreFilter.Add("AliveTime", 0.5f);
-            asparagusSeeds.ScoreFilter.Add("MaxConcurrentSeenCreatures", 1);
-            asparagusSeeds.ScoreFilter.Add("DamageDealt", 10);
-            asparagusSeeds.ScoreFilter.Add("EnemyKills", 10);
-            asparagusSeeds.ScoreFilter.Add("FriendlyKills", -10);
+            asparagusSeeds.ScoreFilter.Add("DistanceFromGoal", -1);
+            asparagusSeeds.ScoreFilter.Add("AliveTime", 2f);
+            asparagusSeeds.ScoreFilter.Add("MaxConcurrentSeenCreatures", 0.1f);
+            asparagusSeeds.ScoreFilter.Add("EnemyDamageDealt", 1.5f);
+            asparagusSeeds.ScoreFilter.Add("FriendlyDamageDealt", -2f);
+            asparagusSeeds.ScoreFilter.Add("EnemyKills", 2);
+            asparagusSeeds.ScoreFilter.Add("FriendlyKills", -3);
+            asparagusSeeds.ScoreFilter.Add("ClosestHit", -4.5f);
+            asparagusSeeds.ScoreFilter.Add("BestAngle", 3);
+            asparagusSeeds.ScoreFilter.Add("OffMap", -1.5f);
         }
 
         private void plantCrops()

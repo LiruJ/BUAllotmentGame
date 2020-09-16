@@ -38,19 +38,22 @@ namespace Assets.Scripts.Seeds
         #endregion
 
         #region Score Functions
-        /// <summary> Calculates the score of this seed using the given <paramref name="scoreFilter"/>. </summary>
+        /// <summary> Calculates the score of this seed using the given <paramref name="scoreFilter"/> and <paramref name="bestWorstByName"/>. </summary>
         /// <param name="scoreFilter"> The stat names and weights used to calculate the score. </param>
+        /// <param name="bestWorstByName"> The best and worst stats of the whole generaiton, used to normalise. </param>
         /// <returns> The score of this seed. </returns>
-        public float CalculateScore(IReadOnlyDictionary<string, float> scoreFilter)
+        public float CalculateScore(IReadOnlyDictionary<string, float> scoreFilter, IReadOnlyDictionary<string, BestWorst> bestWorstByName)
         {
             // Start the score as 0.
             float score = 0;
 
             // Go over each stat in the filter, if the lifetime stats contains the filter stat, add it to the score with the weight.
             foreach (KeyValuePair<string, float> nameWeightPair in scoreFilter)
-                if (LifetimeStats.TryGetValue(nameWeightPair.Key, out float stat)) score += stat * nameWeightPair.Value;
+                if (LifetimeStats.TryGetValue(nameWeightPair.Key, out float stat) && stat > 0 && bestWorstByName.TryGetValue(nameWeightPair.Key, out BestWorst bestWorst) && bestWorst.Best != bestWorst.Worst)
+                    score += ((stat - bestWorst.Worst) / (bestWorst.Best - bestWorst.Worst)) * nameWeightPair.Value;
 
             // Return the final score.
+            if (float.IsNaN(score)) Debug.LogError("Score is NaN");
             return score;
         }
         #endregion
