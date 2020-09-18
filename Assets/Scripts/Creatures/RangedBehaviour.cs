@@ -50,6 +50,10 @@ namespace Assets.Scripts.Creatures
         public float MaxPower { get; set; }
 
         public float AttackInterval { get; set; }
+
+        public float PitchDeviation { get; set; }
+
+        public float YawDeviation { get; set; }
         #endregion
 
         #region ANN Properties
@@ -68,8 +72,6 @@ namespace Assets.Scripts.Creatures
         public float PitchPowerWeight { get; set; }
 
         public float YawBias { get; set; }
-
-        public float YawAngleWeight { get; set; }
 
         public float YawPowerWeight { get; set; }
 
@@ -136,28 +138,23 @@ namespace Assets.Scripts.Creatures
                 if (timeSinceLastAttack >= AttackInterval && creatureTarget.Target.IsAlive)
                 {
                     // Calculate the power of the throw.
-                    float power = (float)Math.Tanh(PowerBias + creatureTarget.NormalisedHealth * PowerHealthWeight + creatureTarget.NormalisedDistance * PowerDistanceWeight);
+                    float power = Mathf.Clamp01(PowerBias + creatureTarget.NormalisedHealth * PowerHealthWeight + creatureTarget.NormalisedDistance * PowerDistanceWeight);
 
                     // Calculate the pitch of the throw.
                     float pitch = Mathf.Clamp(PitchBias + creatureTarget.NormalisedDistance * PitchDistanceWeight + NeuralNetworkHelper.ExpandRangeToNegative(creatureTarget.TargetRigidbody.velocity.magnitude / 1000) * PitchSpeedWeight
                         + power * PitchPowerWeight, -1, 1);
 
-                    // Calcualte the normalised direction to the target, then the angles (in degrees) from that.
-                    Quaternion rotationToTarget = Quaternion.LookRotation((creatureTarget.Transform.position - transform.position).normalized);
-
                     // Calculate the yaw of the throw.
-                    float z = YawBias + creatureTarget.NormalisedDistance * YawDistanceWeight + power * YawPowerWeight 
-                        + NeuralNetworkHelper.ExpandRangeToNegative(creatureTarget.TargetRigidbody.velocity.magnitude / 1000) * YawSpeedWeight;
-                    float yaw = Mathf.Clamp(z, -1, 1);
+                    float yaw = Mathf.Clamp(YawBias + creatureTarget.NormalisedDistance * YawDistanceWeight + power * YawPowerWeight
+                        + NeuralNetworkHelper.ExpandRangeToNegative(creatureTarget.TargetRigidbody.velocity.magnitude / 1000) * YawSpeedWeight, -1, 1);
 
-                    Vector3 changedDirection = rotationToTarget.eulerAngles;
-                    changedDirection.y += yaw * 180;
-                    changedDirection.x += pitch * 180;
+                    // Calcualte the normalised direction to the target, then the angles (in degrees) from that.
+                    Vector3 direction = Quaternion.LookRotation((creatureTarget.Transform.position - transform.position).normalized).eulerAngles;
+                    direction.y += yaw * Mathf.Clamp(YawDeviation, 0, 180);
+                    direction.x += pitch * Mathf.Clamp(PitchDeviation, 0, 180);
 
                     // Create a new spear.
-                    GameObject spearObject = Instantiate(projectilePrefab.gameObject, heldWeapon.position, Quaternion.Euler(changedDirection), Creature.ProjectileContainer);
-
-                    Debug.DrawRay(heldWeapon.position, spearObject.transform.forward, Color.red, 10);
+                    GameObject spearObject = Instantiate(projectilePrefab.gameObject, heldWeapon.position, Quaternion.Euler(direction), Creature.ProjectileContainer);
 
                     //spearObject.transform.position = heldWeapon.position;
                     spearObject.transform.localScale = Vector3.Scale(heldWeapon.localScale, transform.localScale);

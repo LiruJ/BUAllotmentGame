@@ -14,6 +14,9 @@ namespace Assets.Scripts.Creatures
         [Tooltip("How much health this creature has.")]
         [SerializeField]
         private CreatureStat healthStat = new CreatureStat();
+
+        [SerializeField]
+        private Transform eyeOrigin = null;
         #endregion
 
         #region Fields
@@ -33,6 +36,10 @@ namespace Assets.Scripts.Creatures
         #region Properties
         /// <summary> The seed of the plant that spawned this creature. </summary>
         public Seed Seed { get; private set; }
+
+        public Transform EyeOrigin => eyeOrigin;
+
+        public Rigidbody Rigidbody { get; private set; }
 
         /// <summary> The current health of this creature. </summary>
         public float Health
@@ -62,6 +69,13 @@ namespace Assets.Scripts.Creatures
 
         /// <summary> The player who owns this creature. </summary>
         public BasePlayer Player => creatureManager.Player;
+        #endregion
+
+        #region Initialisation Functions
+        private void Start()
+        {
+            Rigidbody = GetComponent<Rigidbody>();
+        }
         #endregion
 
         #region Stat Functions

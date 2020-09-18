@@ -377,6 +377,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  eyeOrigin: {fileID: 152986140969454477}
 --- !u!114 &3700261801286970102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -660,10 +661,10 @@ MonoBehaviour:
   - statName: PowerBias
     mutationChance: 0.05
     signFlipChance: 0.01
-    mutationStrength: 1
+    mutationStrength: 0.1
     minimum: -10000
-    startingValue: 0
-    startingRange: 2
+    startingValue: 0.5
+    startingRange: 0.5
     sideEffects: []
     onValueChanged:
       m_PersistentCalls:
@@ -724,8 +725,8 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - statName: PitchBias
-    mutationChance: 0.05
-    signFlipChance: 0.03
+    mutationChance: 0.1
+    signFlipChance: 0.01
     mutationStrength: 0.1
     minimum: -10000
     startingValue: 0
@@ -833,28 +834,6 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-  - statName: YawAngleWeight
-    mutationChance: 0.1
-    signFlipChance: 0.01
-    mutationStrength: 0.01
-    minimum: -10000
-    startingValue: 0
-    startingRange: 0
-    sideEffects: []
-    onValueChanged:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4968430239771915622}
-          m_MethodName: set_YawAngleWeight
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
   - statName: YawPowerWeight
     mutationChance: 0.1
     signFlipChance: 0
@@ -912,6 +891,50 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 4968430239771915622}
           m_MethodName: set_YawDistanceWeight
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: PitchDeviation
+    mutationChance: 0.2
+    signFlipChance: 0
+    mutationStrength: 10
+    minimum: 0
+    startingValue: 90
+    startingRange: 90
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_PitchDeviation
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - statName: YawDeviation
+    mutationChance: 0.4
+    signFlipChance: 0
+    mutationStrength: 5
+    minimum: 0
+    startingValue: 90
+    startingRange: 90
+    sideEffects: []
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4968430239771915622}
+          m_MethodName: set_YawDeviation
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

@@ -286,6 +286,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  eyeOrigin: {fileID: 5138160559395233641}
 --- !u!114 &-5138389700123578108
 MonoBehaviour:
   m_ObjectHideFlags: 0
