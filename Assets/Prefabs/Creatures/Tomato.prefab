@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5458278082131686995}
   - component: {fileID: 7481371556853899697}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tommy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -230,7 +230,7 @@ MonoBehaviour:
     mutationStrength: 2.5
     minimum: 0
     startingValue: 20
-    startingRange: 0
+    startingRange: 5
     sideEffects:
     - name: Mass
       multiplier: 0.1
@@ -881,7 +881,7 @@ PrefabInstance:
     - target: {fileID: -927199367670048503, guid: f37311c279f41134ca6c03c5ffcebfaa,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f37311c279f41134ca6c03c5ffcebfaa, type: 3}

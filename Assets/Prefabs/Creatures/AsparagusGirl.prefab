@@ -70,7 +70,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5062668404572434348}
   - component: {fileID: 7511677086483682742}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sparry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1128,7 +1128,7 @@ PrefabInstance:
     - target: {fileID: -927199367670048503, guid: ee07a0e4a71cb0345a5a372a5fbfacfc,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ee07a0e4a71cb0345a5a372a5fbfacfc, type: 3}

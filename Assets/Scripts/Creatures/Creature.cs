@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Player;
 using Assets.Scripts.Seeds;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,8 +30,8 @@ namespace Assets.Scripts.Creatures
         /// <summary> How long in seconds the creature has been alive. </summary>
         private float aliveTime = 0;
 
-        /// <summary> The creature's behaviours. </summary>
-        private readonly List<CreatureBehaviour> creatureBehaviours = new List<CreatureBehaviour>();
+        /// <summary> The creature's behaviours keyed by name (without "behaviour" on the end). </summary>
+        private readonly Dictionary<string, CreatureBehaviour> creatureBehaviours = new Dictionary<string, CreatureBehaviour>();
         #endregion
 
         #region Properties
@@ -58,6 +59,8 @@ namespace Assets.Scripts.Creatures
             }
         }
 
+        public float MaxHealth => healthStat.Value;
+
         /// <summary> Is true if the creature is alive; false otherwise. </summary>
         public bool IsAlive => Health > 0;
 
@@ -80,7 +83,18 @@ namespace Assets.Scripts.Creatures
 
         #region Stat Functions
         /// <summary> Finds and stores every behaviour of the creature. </summary>
-        private void findBehaviours() => creatureBehaviours.AddRange(GetComponents<CreatureBehaviour>());
+        private void findBehaviours()
+        {
+            foreach (CreatureBehaviour creatureBehaviour in GetComponents<CreatureBehaviour>())
+            {
+                // Get the name of the behaviour without "Behaviour" on the end.
+                string behaviourName = creatureBehaviour.GetType().Name;
+                behaviourName = behaviourName.Remove(behaviourName.IndexOf("Behaviour"));
+
+                // Add the behaviour keyed by the name.
+                creatureBehaviours.Add(behaviourName, creatureBehaviour);
+            }
+        }
 
         /// <summary> Initialises the creature using the given <paramref name="seed"/>. </summary>
         /// <param name="creatureManager"> The manager that spawned this creature. </param>
@@ -95,10 +109,10 @@ namespace Assets.Scripts.Creatures
             ProjectileContainer = projectileContainer;
 
             // Add the behaviours.
-            findBehaviours();
+            if (creatureBehaviours?.Count == 0) findBehaviours();
 
             // Initialise each behaviour.
-            foreach (CreatureBehaviour creatureBehaviour in creatureBehaviours)
+            foreach (CreatureBehaviour creatureBehaviour in creatureBehaviours.Values)
                 creatureBehaviour.InitialiseFromStats(this, seed.GeneticStats);
 
             // Initialise each generic genetic stat.
@@ -118,7 +132,7 @@ namespace Assets.Scripts.Creatures
             healthStat.PopulateSeed(droppedSeed);
 
             // Give each behaviour a chance to set the genetic and lifetime stats of the dropped seed.
-            foreach (CreatureBehaviour creatureBehaviour in creatureBehaviours)
+            foreach (CreatureBehaviour creatureBehaviour in creatureBehaviours.Values)
                 creatureBehaviour.PopulateSeed(droppedSeed);
 
             // Calculate the generic lifetime stats of this creature.
