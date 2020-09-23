@@ -19,14 +19,14 @@ namespace Assets.Scripts.Seeds
         public Dictionary<string, float> GeneticStats { get; } = new Dictionary<string, float>();
 
         /// <summary> The lifetime stats (damage dealt, kills, distance travelled, etc.) of the creature from whom this seed was created. </summary>
-        public Dictionary<string, float> LifetimeStats { get; } = new Dictionary<string, float>();
+        public IReadOnlyDictionary<string, float> LifetimeStats { get; }
         #endregion
 
         #region Constructors
         /// <summary> Creates a seed with the given generation and crop. </summary>
         /// <param name="generation"> The generation of the seed. </param>
         /// <param name="cropTileName"></param>
-        public Seed(uint generation, string cropTileName)
+        public Seed(uint generation, string cropTileName, IReadOnlyDictionary<string, float> lifetimeStats)
         {
             // Set the generation.
             Generation = generation;
@@ -34,6 +34,9 @@ namespace Assets.Scripts.Seeds
             // If the crop name is invalid, throw an exception. Otherwise; set the crop tile.
             if (string.IsNullOrWhiteSpace(cropTileName)) Debug.LogException(new ArgumentException("Seed cannot have an empty or null crop name."));
             CropTileName = cropTileName ?? throw new ArgumentNullException(nameof(cropTileName));
+
+            // Set the lifetime stats.
+            LifetimeStats = lifetimeStats;
         }
         #endregion
 

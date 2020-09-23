@@ -36,6 +36,10 @@ namespace Assets.Scripts.BUCore.Control
         private KeyCode speedUpKey = KeyCode.LeftShift;
 
         [Header("Settings")]
+        [Tooltip("True if the camera should still be able to move while the game is paused. Also means that time scale will not change the speed of the camera.")]
+        [SerializeField]
+        private bool useScaledTime = true;
+
         [Range(0, 100)]
         [Tooltip("The amount of units per second to move in each direction.")]
         [SerializeField]
@@ -48,7 +52,7 @@ namespace Assets.Scripts.BUCore.Control
         #endregion
 
         #region Update Functions
-        private void FixedUpdate()
+        private void Update()
         {
             // The distance in each axis to move.
             Vector3 deltaPosition = Vector3.zero;
@@ -69,7 +73,7 @@ namespace Assets.Scripts.BUCore.Control
             if (Input.GetKey(speedUpKey)) deltaPosition *= speedUpMultiplier;
 
             // Apply the delta position multipled by the delta time.
-            transform.position += deltaPosition * Time.fixedDeltaTime;
+            transform.position += (useScaledTime) ? deltaPosition * UnityEngine.Time.deltaTime : deltaPosition * UnityEngine.Time.unscaledDeltaTime;
         }
         #endregion
     }

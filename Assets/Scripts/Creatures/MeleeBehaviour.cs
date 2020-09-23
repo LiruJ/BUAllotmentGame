@@ -1,6 +1,4 @@
-﻿using Assets.Scripts.Seeds;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 namespace Assets.Scripts.Creatures
@@ -19,10 +17,6 @@ namespace Assets.Scripts.Creatures
         private TargetingBehaviour targetingBehaviour = null;
 
         private MovementBehaviour movementBehaviour = null;
-
-        private uint enemyKills = 0;
-
-        private float enemyDamageDealt = 0;
         #endregion
 
         #region Properties
@@ -47,10 +41,10 @@ namespace Assets.Scripts.Creatures
         #endregion
 
         #region Stat Functions
-        protected override void populateLifetimeStats(Seed seed)
+        protected override void statsInitialised()
         {
-            seed.LifetimeStats.Add("EnemyKills", enemyKills);
-            seed.LifetimeStats.Add("EnemyDamageDealt", enemyDamageDealt);
+            addLifetimeStat("EnemyKills");
+            addLifetimeStat("EnemyDamageDealt");
         }
         #endregion
 
@@ -89,10 +83,10 @@ namespace Assets.Scripts.Creatures
                         creatureTarget.Target.Health -= Damage;
 
                         // Add the dealt damage to the stat.
-                        enemyDamageDealt += Damage;
+                        changeLifetimeStat("EnemyDamageDealt", Damage);
 
                         // If the target is now dead, increment the kill counter.
-                        if (!creatureTarget.Target.IsAlive) enemyKills++;
+                        if (!creatureTarget.Target.IsAlive) changeLifetimeStat("EnemyKills", 1);
 
                         // Invoke the attack event.
                         onAttack.Invoke();

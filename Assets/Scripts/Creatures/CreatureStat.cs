@@ -58,6 +58,9 @@ namespace Assets.Scripts.Creatures
         #endregion
 
         #region Properties
+        /// <summary> The name of this stat. </summary>
+        public string Name => statName;
+
         /// <summary> The value of the stat. </summary>
         public float Value
         {

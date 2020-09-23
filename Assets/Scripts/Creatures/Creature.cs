@@ -1,6 +1,5 @@
 ﻿using Assets.Scripts.Player;
 using Assets.Scripts.Seeds;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,11 +26,10 @@ namespace Assets.Scripts.Creatures
         /// <summary> The manager that spawned this creature. </summary>
         private CreatureManager creatureManager = null;
 
-        /// <summary> How long in seconds the creature has been alive. </summary>
-        private float aliveTime = 0;
-
         /// <summary> The creature's behaviours keyed by name (without "behaviour" on the end). </summary>
         private readonly Dictionary<string, CreatureBehaviour> creatureBehaviours = new Dictionary<string, CreatureBehaviour>();
+
+        private readonly Dictionary<string, float> lifetimeStats = new Dictionary<string, float>();
         #endregion
 
         #region Properties
@@ -64,6 +62,11 @@ namespace Assets.Scripts.Creatures
         /// <summary> Is true if the creature is alive; false otherwise. </summary>
         public bool IsAlive => Health > 0;
 
+        public IReadOnlyDictionary<string, CreatureBehaviour> CreatureBehaviours => creatureBehaviours;
+
+        /// <summary> The generic lifetime stats of the creature. </summary>
+        public IReadOnlyDictionary<string, float> LifetimeStats => lifetimeStats;
+
         /// <summary> The object that the creature is trying to reach. </summary>
         public Transform GoalObject { get; private set; }
 
@@ -79,14 +82,19 @@ namespace Assets.Scripts.Creatures
         {
             Rigidbody = GetComponent<Rigidbody>();
         }
+
+        public void InitialiseFirstTime(Transform projectileContainer) => ProjectileContainer = projectileContainer;
         #endregion
 
         #region Stat Functions
         /// <summary> Finds and stores every behaviour of the creature. </summary>
-        private void findBehaviours()
+        private void initialiseBehaviours()
         {
             foreach (CreatureBehaviour creatureBehaviour in GetComponents<CreatureBehaviour>())
             {
+                // Initialise the behaviour.
+                creatureBehaviour.InitialiseFirstTime();
+                
                 // Get the name of the behaviour without "Behaviour" on the end.
                 string behaviourName = creatureBehaviour.GetType().Name;
                 behaviourName = behaviourName.Remove(behaviourName.IndexOf("Behaviour"));
@@ -100,20 +108,23 @@ namespace Assets.Scripts.Creatures
         /// <param name="creatureManager"> The manager that spawned this creature. </param>
         /// <param name="seed"> The seed from which this creature was made. </param>
         /// <param name="goalObject"> The object that the creature wishes to reach. </param>
-        public void InitialiseFromStats(CreatureManager creatureManager, Seed seed, Transform goalObject, Transform projectileContainer)
+        public void InitialiseFromSeed(CreatureManager creatureManager, Seed seed, Transform goalObject)
         {
             // Set fields and properties.
             this.creatureManager = creatureManager;
             Seed = seed;
             GoalObject = goalObject;
-            ProjectileContainer = projectileContainer;
+
+            // Clear the lifetime stats collection and add the generic stats.
+            lifetimeStats.Clear();
+            lifetimeStats.Add("AliveTime", 0);
 
             // Add the behaviours.
-            if (creatureBehaviours?.Count == 0) findBehaviours();
+            if (creatureBehaviours?.Count == 0) initialiseBehaviours();
 
             // Initialise each behaviour.
             foreach (CreatureBehaviour creatureBehaviour in creatureBehaviours.Values)
-                creatureBehaviour.InitialiseFromStats(this, seed.GeneticStats);
+                creatureBehaviour.InitialiseFromStats(seed.GeneticStats);
 
             // Initialise each generic genetic stat.
             healthStat.InitialiseFromStats(seed.GeneticStats);
@@ -125,36 +136,34 @@ namespace Assets.Scripts.Creatures
         /// <returns> The created seed. </returns>
         public Seed DropSeed()
         {
+            // Create a new dictionary to hold the lifetime stats of every behaviour.
+            Dictionary<string, float> fullLifetimeStats = new Dictionary<string, float>();
+            foreach (KeyValuePair<string, float> statNameValue in LifetimeStats)
+                fullLifetimeStats.Add(statNameValue.Key, statNameValue.Value);
+
             // Create a new seed using the stats from this creature's seed.
-            Seed droppedSeed = new Seed(Seed.Generation + 1, Seed.CropTileName);
+            Seed droppedSeed = new Seed(Seed.Generation + 1, Seed.CropTileName, fullLifetimeStats);
 
             // Populate with the generic genetic stats.
             healthStat.PopulateSeed(droppedSeed);
 
             // Give each behaviour a chance to set the genetic and lifetime stats of the dropped seed.
             foreach (CreatureBehaviour creatureBehaviour in creatureBehaviours.Values)
+            {
                 creatureBehaviour.PopulateSeed(droppedSeed);
-
-            // Calculate the generic lifetime stats of this creature.
-            populateLifetimeStats(droppedSeed);
+                foreach (KeyValuePair<string, float> statNameValue in creatureBehaviour.LifetimeStats)
+                    fullLifetimeStats.Add(statNameValue.Key, statNameValue.Value);
+            }
 
             // Return the dropped seed.
             return droppedSeed;
-        }
-
-        /// <summary> Adds all generic stats to the given <paramref name="droppedSeed"/>. </summary>
-        /// <param name="droppedSeed"> The seed to fill with stats. </param>
-        private void populateLifetimeStats(Seed droppedSeed)
-        {
-            // Add each generic lifetime stat to the seed.
-            droppedSeed.LifetimeStats.Add("AliveTime", aliveTime);
         }
         #endregion
 
         #region Update Functions
         private void FixedUpdate()
         {
-            if (IsAlive) aliveTime += Time.fixedDeltaTime;
+            if (IsAlive) lifetimeStats["AliveTime"] += Time.fixedDeltaTime;
         }
         #endregion
     }

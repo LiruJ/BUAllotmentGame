@@ -33,20 +33,23 @@ namespace Assets.Scripts.GameInterface.CreatureInfo
 
         [SerializeField]
         private Text speedLabel = null;
+
+        [SerializeField]
+        private Text aliveTimeLabel = null;
         #endregion
 
         #region Fields
-
+        private BehaviourDisplay[] behaviourDisplays = null;
         #endregion
 
         #region Properties
-
+        public CreatureInspector CreatureInspector => creatureInspector;
         #endregion
 
         #region Initialisation Functions
         private void Start()
         {
-
+            behaviourDisplays = GetComponentsInChildren<BehaviourDisplay>();
         }
 
         private void Awake()
@@ -62,6 +65,10 @@ namespace Assets.Scripts.GameInterface.CreatureInfo
             {
                 // Activate the info pane.
                 gameObject.SetActive(true);
+
+                // Go over each behaviour and display it.
+                foreach (BehaviourDisplay behaviourDisplay in behaviourDisplays)
+                    behaviourDisplay.DisplayCreature(creature);
 
                 // Begin tracking the creature with the icon camera.
                 iconCamera.TrackedObject = creature.EyeOrigin;
@@ -80,10 +87,7 @@ namespace Assets.Scripts.GameInterface.CreatureInfo
         private void Update()
         {
             creatureIcon.gameObject.SetActive(iconCamera.HasTrackedObject);
-        }
 
-        private void FixedUpdate()
-        {
             if (creatureInspector.HasSelectedCreature)
             {
                 // Activate the info pane.
@@ -95,6 +99,9 @@ namespace Assets.Scripts.GameInterface.CreatureInfo
 
                 // Update the speedometer.
                 speedLabel.text = $"{creatureInspector.SelectedCreature.Rigidbody.velocity.magnitude:N4}ms";
+
+                // Update the alive time label.
+                aliveTimeLabel.text = $"{creatureInspector.SelectedCreature.LifetimeStats["AliveTime"]:N4}s";
             }
             else gameObject.SetActive(false);
         }

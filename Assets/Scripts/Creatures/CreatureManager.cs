@@ -62,11 +62,14 @@ namespace Assets.Scripts.Creatures
             // Get the creature script of the instance.
             Creature creatureScript = creatureInstance.GetComponent<Creature>();
 
+            // Initialise the creature for the first time.
+            creatureScript.InitialiseFirstTime(projectileContainer);
+
             // Add the creature to the collection.
             creaturesByInstanceID.Add(creatureInstance.GetInstanceID(), creatureScript);
 
             // Intitialise the stats of the creature based on the given seed.
-            creatureScript.InitialiseFromStats(this, seed, goalObject, projectileContainer);
+            creatureScript.InitialiseFromSeed(this, seed, goalObject);
         }
 
         public void CreatureDied(Creature creature)

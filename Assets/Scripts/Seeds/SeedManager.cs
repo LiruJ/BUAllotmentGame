@@ -35,8 +35,8 @@ namespace Assets.Scripts.Seeds
         {
             // Add a tomato seed to give the player something to plant.
             // TODO: A better way of setting starting seeds.
-            AddSeed(new Seed(0, "Tomato"));
-            AddSeed(new Seed(0, "Asparagus"));
+            AddSeed(new Seed(0, "Tomato", new Dictionary<string, float>()));
+            AddSeed(new Seed(0, "Asparagus", new Dictionary<string, float>()));
 
             // Invoke the initialised event.
             onInitialised.Invoke();

@@ -1,7 +1,5 @@
 ﻿using Assets.Scripts.BUCore.Maths;
 using Assets.Scripts.Projectiles;
-using Assets.Scripts.Seeds;
-using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Creatures
@@ -26,20 +24,6 @@ namespace Assets.Scripts.Creatures
         private TargetingBehaviour targetingBehaviour = null;
 
         private MovementBehaviour movementBehaviour = null;
-        #endregion
-
-        #region Lifetime Stats
-        private uint enemyKills = 0;
-
-        private uint friendlyKills = 0;
-
-        private float enemyDamageDealt = 0;
-
-        private float friendlyDamageDealt = 0;
-
-        private float closestHit = 10000;
-
-        private float bestAngle = -1;
 
         private uint thrownShots = 0;
 
@@ -87,35 +71,27 @@ namespace Assets.Scripts.Creatures
             targetingBehaviour = GetComponent<TargetingBehaviour>();
             movementBehaviour = GetComponent<MovementBehaviour>();
         }
-
-        private void Awake()
-        {
-
-        }
         #endregion
 
         #region Stat Functions
-        protected override void populateLifetimeStats(Seed seed)
+        protected override void statsInitialised()
         {
-            seed.LifetimeStats.Add("EnemyKills", enemyKills);
-            seed.LifetimeStats.Add("FriendlyKills", friendlyKills);
-            seed.LifetimeStats.Add("EnemyDamageDealt", enemyDamageDealt);
-            seed.LifetimeStats.Add("FriendlyDamageDealt", friendlyDamageDealt);
-            seed.LifetimeStats.Add("ClosestHit", closestHit);
-            seed.LifetimeStats.Add("BestAngle", bestAngle);
-            seed.LifetimeStats.Add("OffMap", thrownShots - collidedShots);
+            addLifetimeStat("EnemyKills");
+            addLifetimeStat("FriendlyKills");
+            addLifetimeStat("EnemyDamageDealt");
+            addLifetimeStat("FriendlyDamageDealt");
+            addLifetimeStat("ClosestHit", 10000);
+            addLifetimeStat("BestAngle", -1);
+            addLifetimeStat("OffMap");
         }
         #endregion
 
         #region Update Functions
-        private void Update()
-        {
-            
-        }
-
         private void FixedUpdate()
         {
             handleAttackLogic();
+
+            setLifetimeStat("Offmap", thrownShots - collidedShots);
         }
 
         private void handleAttackLogic()
@@ -187,25 +163,28 @@ namespace Assets.Scripts.Creatures
             // If a creature was hit, damage it
             if (projectileHitInfo.HitCreature != null && projectileHitInfo.HitCreature.IsAlive)
             {
-                float finalDamage = projectileHitInfo.Speed * 10;
+                // Calculate the damage dealt based on the speed of the projectile.
+                float finalDamage = projectileHitInfo.Speed * 2;
+
+                // Remove the damage from the hit creature's health.
                 projectileHitInfo.HitCreature.Health -= finalDamage;
 
                 // Keep track of the dealt damage.
-                if (projectileHitInfo.HitCreature.Player == Creature.Player) friendlyDamageDealt += finalDamage;
-                else enemyDamageDealt += finalDamage;
+                if (projectileHitInfo.HitCreature.Player == Creature.Player) changeLifetimeStat("FriendlyDamageDealt", finalDamage);
+                else changeLifetimeStat("EnemyDamageDealt", finalDamage);
 
                 // If the creature is now dead, track the kill.
                 if (!projectileHitInfo.HitCreature.IsAlive)
                 {
-                    if (projectileHitInfo.HitCreature.Player == Creature.Player) friendlyKills++;
-                    else enemyKills++;
+                    if (projectileHitInfo.HitCreature.Player == Creature.Player) changeLifetimeStat("FriendlyKills", 1);
+                    else changeLifetimeStat("EnemyKills", 1);
                 }
             }
 
             // If this hit was closer than the previous hit, keep track of it.
             Vector3 targetPosition = (projectileHitInfo.TargetCreature != null) ? projectileHitInfo.TargetCreature.transform.position : projectileHitInfo.TargetPosition;
             float distanceFromTarget = Vector3.Distance(projectileHitInfo.HitPosition, targetPosition);
-            if (distanceFromTarget < closestHit) closestHit = distanceFromTarget;
+            if (distanceFromTarget < LifetimeStats["ClosestHit"]) setLifetimeStat("ClosestHit", distanceFromTarget);
 
             // Calculate the angle between the origin of the throw and the hit location, as well as the angle between the origin and the target.
             Vector2 originHitDirection = (new Vector2(projectileHitInfo.HitPosition.x, projectileHitInfo.HitPosition.z) - new Vector2(projectileHitInfo.OriginPosition.x, projectileHitInfo.OriginPosition.z)).normalized;
@@ -215,7 +194,7 @@ namespace Assets.Scripts.Creatures
 
             // Calculate the dot product between the desired throw and the actual throw. If this value is higher than the current best, set the current best to it.
             float dotProduct = Vector2.Dot(originHitDirection, originTargetDirection);
-            if (dotProduct > bestAngle) bestAngle = dotProduct;
+            if (dotProduct > LifetimeStats["BestAngle"]) setLifetimeStat("BestAngle", dotProduct);
 
             // Increment the collided shots counter, as the shot hit something.
             collidedShots++;

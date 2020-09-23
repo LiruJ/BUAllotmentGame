@@ -236,7 +236,7 @@ namespace Assets.Scripts.BUCore.TileMap
             if (timeBetweenTicks == 0) return;
 
             // Calculate how many seconds it has been since the last tick.
-            float timeSinceLastTick = Time.time - timeOfLastTick;
+            float timeSinceLastTick = UnityEngine.Time.time - timeOfLastTick;
 
             // Keep ticking as many times as needed.
             int ticksThisFrame = 0;
@@ -253,7 +253,7 @@ namespace Assets.Scripts.BUCore.TileMap
             }
 
             // If ticks were made, track the time of the last tick.
-            if (ticksThisFrame > 0) timeOfLastTick = Time.time;
+            if (ticksThisFrame > 0) timeOfLastTick = UnityEngine.Time.time;
         }
 
         /// <summary> Perform a tick on each tile within the map. </summary>

@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.BUCore.Maths;
-using Assets.Scripts.Seeds;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,8 +19,6 @@ namespace Assets.Scripts.Creatures
         #endregion
 
         #region Fields
-        private uint maxConcurrentSeenCreatures = 0;
-
         private float timeSinceLastSightCheck = 0.0f;
 
         private Collider[] seenColliders = new Collider[40];
@@ -47,17 +44,20 @@ namespace Assets.Scripts.Creatures
         #endregion
 
         #region Stat Functions
-        protected override void populateLifetimeStats(Seed seed)
+        protected override void statsInitialised()
         {
-            seed.LifetimeStats.Add("MaxConcurrentSeenCreatures", maxConcurrentSeenCreatures);
+            // Add the seen creatures count to the lifetime stats.
+            addLifetimeStat("MaxConcurrentSeenCreatures");
         }
         #endregion
 
         #region Update Functions
         private void FixedUpdate()
         {
+            // Clear the target if it died.
             if (CurrentTarget.HasValue && CurrentTarget.Value.Target == null) CurrentTarget = null;
 
+            // Check for enemies in the surrounding area.
             checkEnemies();
         }
 
@@ -99,7 +99,7 @@ namespace Assets.Scripts.Creatures
                 });
 
                 // Set the max concurrent seen creatures if the number of seen creatures is higher than the old value.
-                maxConcurrentSeenCreatures = (uint)Math.Max(maxConcurrentSeenCreatures, seenEnemies.Count);
+                setLifetimeStat("MaxConcurrentSeenCreatures", (uint)Math.Max(LifetimeStats["MaxConcurrentSeenCreatures"], seenEnemies.Count));
 
                 // If enemies were seen, take the last one (the one with the highest score) and set the current target to it, otherwise set the current target to null.
                 CurrentTarget = (seenEnemies.Count > 0) ? seenEnemies[seenEnemies.Count - 1] : (CreatureTarget?)null;
