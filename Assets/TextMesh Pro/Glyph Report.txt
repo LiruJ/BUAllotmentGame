@@ -1,0 +1,12 @@
+Font: Dimbo  Style: Regular
+Point Size: 144   SP/PD Ratio: 10.4%
+
+Characters included: 97/97
+Missing characters: 0
+Excluded characters: 0
+
+Characters missing from font file:
+----------------------------------------
+
+Characters excluded from packing:
+----------------------------------------

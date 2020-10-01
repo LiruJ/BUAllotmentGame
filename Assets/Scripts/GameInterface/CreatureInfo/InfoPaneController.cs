@@ -23,19 +23,19 @@ namespace Assets.Scripts.GameInterface.CreatureInfo
         private RawImage creatureIcon = null;
 
         [SerializeField]
-        private Text creatureNameLabel = null;
+        private TMPro.TextMeshProUGUI creatureNameLabel = null;
 
         [SerializeField]
         private ProgressBar healthBar = null;
 
         [SerializeField]
-        private Text healthLabel = null;
+        private TMPro.TextMeshProUGUI healthLabel = null;
 
         [SerializeField]
-        private Text speedLabel = null;
+        private TMPro.TextMeshProUGUI speedLabel = null;
 
         [SerializeField]
-        private Text aliveTimeLabel = null;
+        private TMPro.TextMeshProUGUI aliveTimeLabel = null;
         #endregion
 
         #region Fields
@@ -98,10 +98,10 @@ namespace Assets.Scripts.GameInterface.CreatureInfo
                 healthLabel.text = $"{creatureInspector.SelectedCreature.Health:N0}/{creatureInspector.SelectedCreature.MaxHealth:N0}HP";
 
                 // Update the speedometer.
-                speedLabel.text = $"{creatureInspector.SelectedCreature.Rigidbody.velocity.magnitude:N4}ms";
+                speedLabel.text = $"{creatureInspector.SelectedCreature.Rigidbody.velocity.magnitude:N2}ms";
 
                 // Update the alive time label.
-                aliveTimeLabel.text = $"{creatureInspector.SelectedCreature.LifetimeStats["AliveTime"]:N4}s";
+                aliveTimeLabel.text = $"{creatureInspector.SelectedCreature.LifetimeStats["AliveTime"]:N1}s";
             }
             else gameObject.SetActive(false);
         }
