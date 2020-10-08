@@ -93,10 +93,10 @@ namespace Assets.Scripts.GameInterface.CreatureInfo
                 healthLabel.text = $"{creatureInspector.SelectedCreature.Health:N0}/{creatureInspector.SelectedCreature.MaxHealth:N0}HP";
 
                 // Update the speedometer.
-                speedLabel.text = $"{creatureInspector.SelectedCreature.Rigidbody.velocity.magnitude:N4}ms";
+                speedLabel.text = $"{creatureInspector.SelectedCreature.Rigidbody.velocity.magnitude:N2}ms";
 
                 // Update the alive time label.
-                aliveTimeLabel.text = $"{creatureInspector.SelectedCreature.LifetimeStats["AliveTime"]:N4}s";
+                aliveTimeLabel.text = $"{creatureInspector.SelectedCreature.LifetimeStats["AliveTime"]:N1}s";
             }
             else gameObject.SetActive(false);
         }
