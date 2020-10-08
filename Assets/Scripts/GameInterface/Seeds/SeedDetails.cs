@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Crops;
 using Assets.Scripts.GameInterface.FilterWindow;
 using Assets.Scripts.Seeds;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,11 +14,11 @@ namespace Assets.Scripts.GameInterface.Seeds
         [Header("Elements")]
         [Tooltip("The text showing the number of the generation.")]
         [SerializeField]
-        private Text seedGenerationLabel = null;
+        private TextMeshProUGUI seedGenerationLabel = null;
 
         [Tooltip("The text showing the number of seeds in this generation.")]
         [SerializeField]
-        private Text seedCount = null;
+        private TextMeshProUGUI seedCount = null;
 
         [Tooltip("The image showing the icon of the generation's crop.")]
         [SerializeField]

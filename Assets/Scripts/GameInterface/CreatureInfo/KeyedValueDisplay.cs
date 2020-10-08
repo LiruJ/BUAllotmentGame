@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using TMPro;
+using UnityEngine;
 
 namespace Assets.Scripts.GameInterface.CreatureInfo
 {
-    [RequireComponent(typeof(Text))]
+    [RequireComponent(typeof(TextMeshProUGUI))]
     public class KeyedValueDisplay : MonoBehaviour, IKeyedValueDisplay
     {
         #region Inspector Fields
@@ -27,7 +27,7 @@ namespace Assets.Scripts.GameInterface.CreatureInfo
         #endregion
 
         #region Fields
-        private Text text = null;
+        private TextMeshProUGUI text = null;
         #endregion
 
         #region Properties
@@ -37,7 +37,7 @@ namespace Assets.Scripts.GameInterface.CreatureInfo
         #endregion
 
         #region Initialisation Functions
-        private void Awake() => text = GetComponent<Text>();
+        private void Awake() => text = GetComponent<TextMeshProUGUI>();
         #endregion
     }
 }

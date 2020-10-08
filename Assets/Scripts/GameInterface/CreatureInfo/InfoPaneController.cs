@@ -2,7 +2,7 @@
 using Assets.Scripts.BUCore.UI;
 using Assets.Scripts.Creatures;
 using Assets.Scripts.Player.Tools;
-using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,19 +23,19 @@ namespace Assets.Scripts.GameInterface.CreatureInfo
         private RawImage creatureIcon = null;
 
         [SerializeField]
-        private Text creatureNameLabel = null;
+        private TextMeshProUGUI creatureNameLabel = null;
 
         [SerializeField]
         private ProgressBar healthBar = null;
 
         [SerializeField]
-        private Text healthLabel = null;
+        private TextMeshProUGUI healthLabel = null;
 
         [SerializeField]
-        private Text speedLabel = null;
+        private TextMeshProUGUI speedLabel = null;
 
         [SerializeField]
-        private Text aliveTimeLabel = null;
+        private TextMeshProUGUI aliveTimeLabel = null;
         #endregion
 
         #region Fields
@@ -50,11 +50,6 @@ namespace Assets.Scripts.GameInterface.CreatureInfo
         private void Start()
         {
             behaviourDisplays = GetComponentsInChildren<BehaviourDisplay>();
-        }
-
-        private void Awake()
-        {
-
         }
         #endregion
 
