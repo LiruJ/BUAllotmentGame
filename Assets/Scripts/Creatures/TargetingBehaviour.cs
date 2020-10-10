@@ -47,7 +47,8 @@ namespace Assets.Scripts.Creatures
         protected override void statsInitialised()
         {
             // Add the seen creatures count to the lifetime stats.
-            addLifetimeStat("MaxConcurrentSeenCreatures");
+            addLifetimeStat("MaxConcurrentSeenCreatures" +
+                "");
         }
         #endregion
 

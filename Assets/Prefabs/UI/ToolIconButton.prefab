@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5323987589955192259}
   - component: {fileID: 5657431825817014445}
   - component: {fileID: 7720806416388348395}
+  - component: {fileID: 7407127697049813327}
   m_Layer: 5
   m_Name: ToolIconButton
   m_TagString: Untagged
@@ -144,3 +145,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 5657431825817014445}
   <ToolType>k__BackingField: 0
+--- !u!114 &7407127697049813327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5912577765231351523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd621f46079125e44b1ca5e41ac684eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltip: {fileID: 0}
+  tooltipText: 
