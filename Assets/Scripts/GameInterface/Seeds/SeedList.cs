@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Crops;
+﻿using Assets.Scripts.BUCore.UI;
+using Assets.Scripts.Crops;
 using Assets.Scripts.Seeds;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using UnityEngine.Events;
 namespace Assets.Scripts.GameInterface.Seeds
 {
     /// <summary> The controller for the list of seed generations. </summary>
-    public class SeedList : MonoBehaviour, ISelectionBar<SeedDetails>
+    public class SeedList : MonoBehaviour, ISelectionBar<SeedGeneration>
     {
         #region Inspector Fields
         [Header("Dependencies")]
@@ -24,15 +25,19 @@ namespace Assets.Scripts.GameInterface.Seeds
         [SerializeField]
         private CropTileset cropTileset = null;
 
-        [Header("Prefabs")]
-        [Tooltip("The details UI element prefab.")]
+        [Tooltip("The tooltip object to pass on.")]
         [SerializeField]
-        private SeedDetails seedDetailsPrefab = null;
+        private Tooltip tooltip = null;
+
+        [Header("Prefabs")]
+        [Tooltip("The generation group UI element prefab.")]
+        [SerializeField]
+        private SeedGenerationGroup generationGroupPrefab = null;
         #endregion
 
         #region Fields
-        /// <summary> The UI seed detail elements keyed by generation. </summary>
-        private readonly Dictionary<SeedGeneration, SeedDetails> seedDetailsBySeedGeneration = new Dictionary<SeedGeneration, SeedDetails>();
+        /// <summary> The UI SeedGenerationGroup elements keyed by the crop tile name of a seed generation. </summary>
+        private readonly Dictionary<string, SeedGenerationGroup> seedGroupsByCropName = new Dictionary<string, SeedGenerationGroup>();
         #endregion
 
         #region Events
@@ -49,39 +54,38 @@ namespace Assets.Scripts.GameInterface.Seeds
         /// <param name="seedGeneration"> The seed generation to add. </param>
         public void SeedAdded(SeedGeneration seedGeneration)
         {
-            // If the generation has no list entry, create one.
-            if (!seedDetailsBySeedGeneration.TryGetValue(seedGeneration, out SeedDetails seedDetails))
+            // If the generation has no group, create one.
+            if (!seedGroupsByCropName.TryGetValue(seedGeneration.CropTileName, out SeedGenerationGroup generationGroup))
             {
-                GameObject seedDetailsPane = Instantiate(seedDetailsPrefab.gameObject, contentPane);
-                seedDetails = seedDetailsPane.GetComponent<SeedDetails>();
-                seedDetails.InitialiseFromSeed(modalWindowController, this, cropTileset, seedGeneration);
-                seedDetailsBySeedGeneration.Add(seedGeneration, seedDetails);
+                // Create the group object and add it to the UI list.
+                GameObject generationGroupObject = Instantiate(generationGroupPrefab.gameObject, contentPane);
+
+                // Get the generation group component from the created object.
+                generationGroup = generationGroupObject.GetComponent<SeedGenerationGroup>();
+
+                // Initialise the group with the crop type of the seed.
+                generationGroup.InitialiseFromCrop(modalWindowController, this, tooltip, cropTileset.GetTileFromName(seedGeneration.CropTileName) as CropTile);
+
+                // Add the group to the collection.
+                seedGroupsByCropName.Add(seedGeneration.CropTileName, generationGroup);
             }
-            // Otherwise; refresh the existing one.
-            else seedDetails.Refresh();
+
+            // Add the seed generation to the group. If the generation already exists under this group, the count will be updated instead.
+            generationGroup.AddGeneration(seedGeneration);
         }
 
         /// <summary> Removes the UI element representing the given <paramref name="seedGeneration"/> from the UI list. </summary>
         /// <param name="seedGeneration"> The generation to remove. </param>
         public void SeedRemoved(SeedGeneration seedGeneration)
         {
-            // If the generation has a list entry, check to see if it needs to be destroyed.
-            if (seedDetailsBySeedGeneration.TryGetValue(seedGeneration, out SeedDetails seedDetails))
-            {
-                // If the generation has no seeds, destroy the UI item.
-                if (seedGeneration.Count == 0)
-                {
-                    Destroy(seedDetails.gameObject);
-                    seedDetailsBySeedGeneration.Remove(seedGeneration);
-                }
-                // Otherwise, refresh it.
-                else seedDetails.Refresh();
-            }
+            // If the generation has a group, refresh it.
+            if (seedGroupsByCropName.TryGetValue(seedGeneration.CropTileName, out SeedGenerationGroup generationGroup))
+                generationGroup.RefreshGeneration(seedGeneration);
         }
 
         /// <summary> This is called when a generation is clicked, and just passes it through to the event. </summary>
-        /// <param name="button"> The button that was clicked. </param>
-        public void OnButtonSelected(SeedDetails button) => onSeedGenerationSelected.Invoke(button.SeedGeneration);
+        /// <param name="seedGeneration"> The button that was clicked. </param>
+        public void OnButtonSelected(SeedGeneration seedGeneration) => onSeedGenerationSelected.Invoke(seedGeneration);
         #endregion
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.BUCore.UI
@@ -16,6 +15,11 @@ namespace Assets.Scripts.BUCore.UI
         [Tooltip("What the tooltip should say.")]
         [SerializeField]
         private string tooltipText = string.Empty;
+        #endregion
+
+        #region Properties
+        /// <summary> The single tooltip object in the canvas. </summary>
+        public Tooltip Tooltip { get => tooltip; set => tooltip = value; }
         #endregion
 
         #region Pointer Functions

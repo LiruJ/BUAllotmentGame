@@ -56,7 +56,7 @@ namespace Assets.Scripts.GameInterface.Seeds
 
             // Bind the main button to select this generation.
             selectionButton.onClick.AddListener(() => selectionBar.OnButtonSelected(this));
-
+            
             // Bind the filter button to create a new filter window.
             filterButton.onClick.AddListener(() => 
             {
