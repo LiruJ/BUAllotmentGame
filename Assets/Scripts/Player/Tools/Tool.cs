@@ -17,6 +17,14 @@ namespace Assets.Scripts.Player.Tools
         [Tooltip("The type of tool this is.")]
         [SerializeField]
         private ToolType toolType = ToolType.None;
+
+        [Tooltip("The name of this tool.")]
+        [SerializeField]
+        private string toolName = string.Empty;
+
+        [Tooltip("The icon representing this tool.")]
+        [SerializeField]
+        private Sprite icon = null;
         #endregion
 
         #region Fields
@@ -36,6 +44,12 @@ namespace Assets.Scripts.Player.Tools
 
         /// <summary> The type of tool this is. </summary>
         public ToolType ToolType => toolType;
+
+        /// <summary> The name of this tool. </summary>
+        public virtual string ToolName => toolName;
+
+        /// <summary> The icon representing this tool. </summary>
+        public virtual Sprite Icon => icon;
         #endregion
 
         #region Initialisation Functions

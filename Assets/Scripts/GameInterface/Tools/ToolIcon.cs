@@ -13,13 +13,15 @@ namespace Assets.Scripts.UI.Tools
         [Tooltip("The button that must be clicked in order for this tool to be selected.")]
         [SerializeField]
         private Button button = null;
+
+        [Header("Tool Icon Settings")]
+        [Tooltip("The type of tool to select when the button is selected.")]
+        [SerializeField]
+        private ToolType toolType;
         #endregion
 
         #region Properties
-        [field: Header("Tool Icon Settings")]
-        [field: Tooltip("The type of tool to select when the button is selected.")]
-        [field: SerializeField]
-        public ToolType ToolType { get; private set; }
+        public ToolType ToolType => toolType;
         #endregion
 
         #region Initialisation Functions

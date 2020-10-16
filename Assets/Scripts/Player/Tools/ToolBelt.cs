@@ -1,6 +1,7 @@
-﻿using Assets.Scripts.Map;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Assets.Scripts.Player.Tools
 {
@@ -49,12 +50,25 @@ namespace Assets.Scripts.Player.Tools
                     if (CurrentTool != null) CurrentTool.OnSelected();
                     // Otherwise; hide the indicators.
                     else { TileIndicator.ShowGridGhost = false; TileIndicator.ShowObjectGhost = false; }
+
+                    // Invoke the tool changed event.
+                    onCurrentToolChanged.Invoke(CurrentTool);
                 }
             }
         }
 
         /// <summary> Gets the object used to indicate object placement. </summary>
         public PlacementIndicator TileIndicator => tileIndicator;
+        #endregion
+
+        #region Events
+        [Serializable]
+        private class toolEvent : UnityEvent<Tool> { }
+
+        [Header("Events")]
+        [Tooltip("Is fired when the current tool is changed.")]
+        [SerializeField]
+        private toolEvent onCurrentToolChanged = new toolEvent();
         #endregion
 
         #region Initialisation Functions

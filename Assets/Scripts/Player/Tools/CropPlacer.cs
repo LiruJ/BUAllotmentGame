@@ -41,6 +41,10 @@ namespace Assets.Scripts.Player.Tools
                 }
             }
         }
+
+        public override Sprite Icon => CurrentSeedGeneration != null && cropTilemap.Tileset.GetTileFromName(CurrentSeedGeneration.CropTileName) is CropTile cropTile ? cropTile.Icon : null;
+
+        public override string ToolName => CurrentSeedGeneration != null ? $"Plant {CurrentSeedGeneration.CropTileName}" : base.ToolName;
         #endregion
 
         #region Initialisation Functions
@@ -53,7 +57,7 @@ namespace Assets.Scripts.Player.Tools
             // Initialise the tile placement ghost.
             TileIndicator.ShowGridGhost = false;
             TileIndicator.ShowObjectGhost = true;
-
+            
             // If a seed is selected, change the object ghost and grid indicators to match the newly selected object.
             if (currentSeedGeneration != null)
             {
