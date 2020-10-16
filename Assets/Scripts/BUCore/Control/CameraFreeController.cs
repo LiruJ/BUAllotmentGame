@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Assets.Scripts.BUCore.Control
 {
-    /// <summary> Allows an object to be moved around the scene using the Unity input system. </summary>
-    public class ObjectInputMover : MonoBehaviour
+    public class CameraFreeController : MonoBehaviour
     {
         #region Inspector Fields
         [Header("Bindings")]
@@ -35,6 +35,10 @@ namespace Assets.Scripts.BUCore.Control
         [SerializeField]
         private KeyCode speedUpKey = KeyCode.LeftShift;
 
+        [Tooltip("The mouse button to drag the camera.")]
+        [SerializeField]
+        private MouseButton dragButton = MouseButton.LeftMouse;
+
         [Header("Settings")]
         [Tooltip("True if the camera should still be able to move while the game is paused. Also means that time scale will not change the speed of the camera.")]
         [SerializeField]
@@ -49,31 +53,52 @@ namespace Assets.Scripts.BUCore.Control
         [Tooltip("The multiplier applied to the speed when the speedup button is held.")]
         [SerializeField]
         private float speedUpMultiplier = 2.0f;
+
+        [Range(0, 10)]
+        [Tooltip("The multiplier applied to the rotational speed.")]
+        [SerializeField]
+        private float rotationMultiplier = 1.0f;
+        #endregion
+
+        #region Fields
+        private Vector3 lastMousePosition = Vector3.zero;
         #endregion
 
         #region Update Functions
         private void Update()
         {
+            if (Input.GetMouseButton((int)dragButton) && (!useScaledTime || UnityEngine.Time.timeScale > 0))
+            {
+                // Calculate the distance between the mouse on the last frame and this frame.
+                Vector3 mouseDelta = Input.mousePosition - lastMousePosition;
+
+                // Apply the rotation to the rotation of the camera. This does not need to be scaled by the delta time since it's using mouse movements rather than digital key presses.
+                transform.eulerAngles += new Vector3(-mouseDelta.y, mouseDelta.x, 0) * rotationMultiplier;
+            }
+
             // The distance in each axis to move.
             Vector3 deltaPosition = Vector3.zero;
 
             // Forwards/Backwards.
-            if (Input.GetKey(forwardKey)) deltaPosition.z += moveSpeed;
-            else if (Input.GetKey(backwardKey)) deltaPosition.z -= moveSpeed;
+            if (Input.GetKey(forwardKey)) deltaPosition += transform.forward * moveSpeed;
+            else if (Input.GetKey(backwardKey)) deltaPosition -= transform.forward * moveSpeed;
 
             // Left/Right.
-            if (Input.GetKey(leftKey)) deltaPosition.x -= moveSpeed;
-            else if (Input.GetKey(rightKey)) deltaPosition.x += moveSpeed;
+            if (Input.GetKey(leftKey)) deltaPosition -= transform.right * moveSpeed;
+            else if (Input.GetKey(rightKey)) deltaPosition += transform.right * moveSpeed;
 
             // Up/Down.
-            if (Input.GetKey(upKey)) deltaPosition.y += moveSpeed;
-            else if (Input.GetKey(downKey)) deltaPosition.y -= moveSpeed;
+            if (Input.GetKey(upKey)) deltaPosition += transform.up * moveSpeed;
+            else if (Input.GetKey(downKey)) deltaPosition -= transform.up * moveSpeed;
 
             // If the speedup key is being held, apply the speedup amount to the delta position.
             if (Input.GetKey(speedUpKey)) deltaPosition *= speedUpMultiplier;
 
             // Apply the delta position multipled by the delta time.
-            transform.position += deltaPosition * ((useScaledTime) ? UnityEngine.Time.deltaTime : UnityEngine.Time.unscaledDeltaTime);
+            transform.position += deltaPosition * (useScaledTime ? UnityEngine.Time.deltaTime :  UnityEngine.Time.unscaledDeltaTime);
+
+            // Save the last previous mouse position.
+            lastMousePosition = Input.mousePosition;
         }
         #endregion
     }
